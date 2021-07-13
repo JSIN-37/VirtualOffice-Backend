@@ -6,7 +6,7 @@ const DBHost = "localhost";
 const DBUser = "VO";
 const DBPassword = "123";
 const DBDatabase = "VO";
-var DBInitialSetup = 0;
+var DBInitialSetup = true;
 const adminID = 1;
 
 var emailHost = "smtp.gmail.com";
@@ -36,7 +36,7 @@ const db = mysql.createConnection({
 db.connect(function (err) {
   if (err) {
     console.log(
-      "Error connecting to VirtualOffice DB. Maybe MySQL isn't running?"
+      "Error connecting to VirtualOffice database. Maybe MySQL isn't running?"
     );
     // throw err;
     process.exit();
@@ -70,9 +70,9 @@ db.connect(function (err) {
             }
           );
 
-          DBInitialSetup = 1; // The initial setup has been done
+          DBInitialSetup = false; // The initial setup has been done
         } else {
-          DBInitialSetup = 0;
+          DBInitialSetup = true;
           console.log(
             "VirtualOffice DB requires an initial setup by the administrator."
           );
@@ -124,7 +124,7 @@ app.post(`/api/${apiVersion}/login`, (req, res) => {
       if (results.length) {
         let info;
         // Indicate frontend that an initial setup is required
-        if (!DBInitialSetup) {
+        if (DBInitialSetup) {
           // First check if this is the admin
           // Admin user id is 0
           if (results[0].id == adminID) {
@@ -135,9 +135,12 @@ app.post(`/api/${apiVersion}/login`, (req, res) => {
           } else {
             res.json({
               error:
-                "VirtualOffice DB is not setup yet. Contact administrator.",
+                "VirtualOffice database is not setup yet. Contact administrator.",
             });
           }
+        }
+        if (results[0].id == adminID) {
+          info.isAdmin = true;
         }
         const user = {
           id: results[0].id,
