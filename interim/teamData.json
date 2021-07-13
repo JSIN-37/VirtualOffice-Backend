@@ -1,0 +1,25 @@
+{
+  "teams": [
+    {
+      "name": "Design Team",
+      "leader": "A.T. Pathirana",
+      "division": "General Administration",
+      "description": "lalalalala",
+      "id": 1
+    },
+    {
+      "name": "Doc Team",
+      "leader": "A.T. Pathirana",
+      "division": "General Administration",
+      "description": "alalalal",
+      "id": 2
+    },
+    {
+      "name": "Web Team",
+      "leader": "A.T. Pathirana",
+      "division": "General Administration",
+      "description": "alalalal",
+      "id": 3
+    }
+  ]
+}

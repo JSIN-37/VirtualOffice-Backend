@@ -362,6 +362,35 @@ app.get(`/api/${apiVersion}/admin/reset-db`, async function (req, res) {
   );
 });
 
+var fs = require("fs");
+// For INTERIMS ONLY
+app.get(`/api/${apiVersion}/interim/todos`, function (req, res) {
+  let rawdata = fs.readFileSync("./interim/todoData.json");
+  let data = JSON.parse(rawdata).todos;
+  res.json(data);
+});
+app.get(`/api/${apiVersion}/interim/doing`, function (req, res) {
+  let rawdata = fs.readFileSync("./interim/doingData.json");
+  let data = JSON.parse(rawdata).doing;
+  res.json(data);
+});
+app.get(`/api/${apiVersion}/interim/teams`, function (req, res) {
+  let rawdata = fs.readFileSync("./interim/teamData.json");
+  let data = JSON.parse(rawdata).teams;
+  res.json(data);
+});
+app.delete(`/api/${apiVersion}/interim/teams/:id`, function (req, res) {
+  let rawdata = fs.readFileSync("./interim/teamData.json");
+  let data = JSON.parse(rawdata).teams;
+  var filtered = data.filter((a) => a.id != req.params.id);
+  fs.writeFileSync(
+    "./interim/teamData.json",
+    JSON.stringify({ teams: filtered }),
+    "utf8"
+  );
+  res.json(filtered);
+});
+
 // Global catch all for everything else
 app.get("*", function (req, res) {
   res

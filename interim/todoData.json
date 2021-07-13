@@ -1,0 +1,12 @@
+{
+    "todos": [
+        {
+            "task": "Finalize registration document",
+            "id": 1
+        },
+        {
+            "task": "Have a meeting with SAR",
+            "id": 2
+        }
+    ]
+}
