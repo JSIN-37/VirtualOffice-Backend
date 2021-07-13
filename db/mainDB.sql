@@ -20,8 +20,8 @@ INSERT INTO `user` (`id`, `first_name`, `last_name`, `email`, `contact_number`, 
 
 CREATE TABLE `vo_settings` (
   `id` int(11) PRIMARY KEY AUTO_INCREMENT,
-  `option` varchar(255),
-  `value` varchar(255)
+  `vo_option` varchar(255),
+  `vo_value` varchar(255)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `vo_settings` (`id`, `vo_option`, `vo_values`) VALUES
