@@ -1,6 +1,6 @@
-const serverAddress = "localhost";
+const serverAddress = "0.0.0.0";
 const serverPort = 3030;
-const frontendURL = "localhost:3000";
+const frontendURL = "http://localhost:3000";
 
 const DBHost = "localhost";
 const DBUser = "VO";
@@ -18,14 +18,24 @@ const jwtKey = "keykeykey";
 const apiVersion = "v1";
 
 const express = require("express");
-var cors = require("cors");
+const https = require("https");
+const fs = require("fs");
 const app = express();
+var cors = require("cors");
 const mysql = require("mysql");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 var transporter;
 
-//start mysql connection
+// Get HTTPS Certs
+var key = fs.readFileSync(`./certs/${serverAddress}.key`);
+var cert = fs.readFileSync(`./certs/${serverAddress}.crt`);
+var options = {
+  key: key,
+  cert: cert,
+};
+
+// Start MySql connection
 const db = mysql.createConnection({
   host: DBHost, //mysql database host name
   user: DBUser, //mysql database user name
@@ -91,11 +101,22 @@ app.use(
 );
 app.use(cors());
 
-var server = app.listen(serverPort, serverAddress, function () {
+var server = https.createServer(options, app);
+server.listen(serverPort, serverAddress, () => {
   var host = server.address().address;
   var port = server.address().port;
-  console.log("VirtualOffice Backend is listening at http://%s:%s", host, port);
+  console.log(
+    "VirtualOffice Backend is listening at https://%s:%s",
+    host,
+    port
+  );
 });
+
+// var server = app.listen(serverPort, serverAddress, function () {
+//   var host = server.address().address;
+//   var port = server.address().port;
+//   console.log("VirtualOffice Backend is listening at http://%s:%s", host, port);
+// });
 
 // Welcome message for root
 app.get(`/api/${apiVersion}/`, function (req, res) {
@@ -289,10 +310,16 @@ app.post(`/api/${apiVersion}/admin/user`, function (req, res) {
   const first_name = req.body.first_name;
   const email = req.body.email;
   const password = Math.random().toString(36).slice(-8);
+  // Hash the password
+  const crypto = require("crypto");
+  const hashedPassword = crypto
+    .createHash("sha512")
+    .update(password)
+    .digest("hex");
   db.query("INSERT INTO user(first_name, email, password) VALUES(?, ?, ?)", [
     first_name,
     email,
-    password,
+    hashedPassword,
   ]);
   sendMail(
     email,
@@ -306,13 +333,14 @@ app.post(`/api/${apiVersion}/admin/user`, function (req, res) {
   );
   res.json({ success: "User added!" });
 });
-app.delete(`/api/${apiVersion}/admin/user`, function (req, res) {
-  const id = req.body.id;
+app.delete(`/api/${apiVersion}/admin/user/:id`, verifyJWT, function (req, res) {
+  const id = req.params.id;
   db.query(
     "DELETE FROM user WHERE id=?",
     [id],
     function (error, results, fields) {
       if (error) throw error;
+      console.log(id);
       res.json({ success: "User was deleted from the database." });
     }
   );
@@ -362,7 +390,6 @@ app.get(`/api/${apiVersion}/admin/reset-db`, async function (req, res) {
   );
 });
 
-var fs = require("fs");
 // For INTERIMS ONLY
 app.get(`/api/${apiVersion}/interim/todos`, (req, res) => {
   let rawdata = fs.readFileSync("./interim/todoData.json");
