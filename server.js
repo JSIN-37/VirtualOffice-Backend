@@ -44,14 +44,14 @@ db.connect(function (err) {
   console.log("Connected with VirtualOffice database.");
   // Check if VO DB needs initial setup
   db.query(
-    "SELECT value FROM vo_settings WHERE option = 'org_setup'",
+    `SELECT vo_value FROM vo_settings WHERE vo_option = "org_setup"`,
     (error, results, fields) => {
       if (error) throw error;
       if (results.length) {
         if (results[0].value == "done") {
           // Grab all the email settings
           db.query(
-            "SELECT value FROM vo_settings WHERE option IN ('email_host','email_port','email_address','email_password')",
+            "SELECT vo_value FROM vo_settings WHERE vo_option IN ('email_host','email_port','email_address','email_password')",
             (error, results, fields) => {
               if (error) throw error;
               emailHost = results[0].value;
@@ -241,25 +241,25 @@ app.post(
     const email_port = req.body.email_port;
     const email_address = req.body.email_address;
     const email_password = req.body.email_password;
-    db.query("UPDATE vo_settings SET value = ? WHERE option='org_setup'", [
+    db.query("UPDATE vo_settings SET vo_value = ? WHERE vo_option='org_setup'", [
       org_setup,
     ]);
-    db.query("UPDATE vo_settings SET value = ? WHERE option='org_name'", [
+    db.query("UPDATE vo_settings SET vo_value = ? WHERE vo_option='org_name'", [
       org_name,
     ]);
-    db.query("UPDATE vo_settings SET value = ? WHERE option='org_country'", [
+    db.query("UPDATE vo_settings SET vo_value = ? WHERE vo_option='org_country'", [
       org_country,
     ]);
-    db.query("UPDATE vo_settings SET value = ? WHERE option='email_host'", [
+    db.query("UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_host'", [
       email_host,
     ]);
-    db.query("UPDATE vo_settings SET value = ? WHERE option='email_port'", [
+    db.query("UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_port'", [
       email_port,
     ]);
-    db.query("UPDATE vo_settings SET value = ? WHERE option='email_address'", [
+    db.query("UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_address'", [
       email_address,
     ]);
-    db.query("UPDATE vo_settings SET value = ? WHERE option='email_password'", [
+    db.query("UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_password'", [
       email_password,
     ]);
     res.json({ success: "VO Settings updated." });
