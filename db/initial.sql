@@ -12,7 +12,7 @@ CREATE TABLE `vo_settings` (
   `vo_value` varchar(255)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `vo_settings` (`id`, `vo_option`, `vo_values`) VALUES
+INSERT INTO `vo_settings` (`id`, `vo_option`, `vo_value`) VALUES
 (1, 'org_setup','done'),
 (2, 'org_name','VirtualOffice'),
 (3, 'org_country','Sri Lanka'),
