@@ -1,11 +1,18 @@
 const serverAddress = "localhost";
 const serverPort = 3030;
+const frontendURL = "localhost:3000";
 
 const DBHost = "localhost";
 const DBUser = "VO";
 const DBPassword = "123";
 const DBDatabase = "VO";
 var DBInitialSetup = 0;
+const adminID = 1;
+
+var emailHost = "smtp.gmail.com";
+var emailPort = "587";
+var emailAddress = "";
+var emailPassword = "";
 
 const jwtKey = "keykeykey";
 const apiVersion = "v1";
@@ -15,6 +22,8 @@ var cors = require("cors");
 const app = express();
 const mysql = require("mysql");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+var transporter;
 
 //start mysql connection
 const db = mysql.createConnection({
@@ -32,7 +41,7 @@ db.connect(function (err) {
     // throw err;
     process.exit();
   }
-  console.log("Connected with VirtualOffice DB.");
+  console.log("Connected with VirtualOffice database.");
   // Check if VO DB needs initial setup
   db.query(
     "SELECT value FROM vo_settings WHERE option = 'org_setup'",
@@ -40,6 +49,27 @@ db.connect(function (err) {
       if (error) throw error;
       if (results.length) {
         if (results[0].value == "done") {
+          // Grab all the email settings
+          db.query(
+            "SELECT value FROM vo_settings WHERE option IN ('email_host','email_port','email_address','email_password')",
+            (error, results, fields) => {
+              if (error) throw error;
+              emailHost = results[0].value;
+              emailPort = results[1].value;
+              emailAddress = results[2].value;
+              emailPassword = results[3].value;
+              transporter = nodemailer.createTransport({
+                host: emailHost,
+                port: emailPort,
+                auth: {
+                  user: emailAddress,
+                  pass: emailPassword,
+                },
+              });
+              console.log("Connected with VirtualOffice email.");
+            }
+          );
+
           DBInitialSetup = 1; // The initial setup has been done
         } else {
           DBInitialSetup = 0;
@@ -69,17 +99,10 @@ var server = app.listen(serverPort, serverAddress, function () {
 
 // Welcome message for root
 app.get(`/api/${apiVersion}/`, function (req, res) {
-  res.json({ success: "You've reached VirtualOffice API." });
+  res.json({ success: "You've reached VirtualOffice API v1.0." });
 });
 
 // General
-// Get all users
-app.get(`/api/${apiVersion}/user`, function (req, res) {
-  db.query("SELECT * FROM user", function (error, results, fields) {
-    if (error) throw error;
-    res.end(JSON.stringify(results));
-  });
-});
 // Login
 app.post(`/api/${apiVersion}/login`, (req, res) => {
   const email = req.body.email;
@@ -104,7 +127,7 @@ app.post(`/api/${apiVersion}/login`, (req, res) => {
         if (!DBInitialSetup) {
           // First check if this is the admin
           // Admin user id is 0
-          if (results[0].id == "0") {
+          if (results[0].id == adminID) {
             // console.log(
             //   `Admin user logged in @ ${new Date().toLocaleString()}`
             // );
@@ -137,6 +160,23 @@ app.post(`/api/${apiVersion}/login`, (req, res) => {
 app.post(`/api/${apiVersion}/logout`, verifyJWT, (req, res) => {
   res.json(req.authData);
 });
+// Get data about user
+app.get(`/api/${apiVersion}/whoami`, verifyJWT, (req, res) => {
+  const userID = req.authData.user.id;
+  db.query(
+    "SELECT id, first_name, last_name FROM user WHERE id = ?",
+    [userID],
+    (error, results, fields) => {
+      if (error) throw error;
+      if (results.length) {
+        res.json(results[0]);
+      } else {
+        res.json({ error: "You have been deleted lmao." });
+      }
+    }
+  );
+});
+
 // Initial setting up
 app.post(`/api/${apiVersion}/initial-setup`, function (req, res) {
   res.end("initial user set up");
@@ -167,6 +207,22 @@ function verifyJWT(req, res, next) {
   }
 }
 
+function sendMail(recipients, subject, body) {
+  transporter
+    .sendMail({
+      from: '"VirtualOffice" <virtualoffice@jsin37.com>', // sender address
+      to: recipients, // list of receivers
+      subject: subject, // Subject line
+      // text: "There is a new article. It's about sending emails, check it out!", // plain text body
+      html: body, // html body
+    })
+    .then((info) => {
+      // console.log({ info });
+      console.log("VirtualOffice sent an email.");
+    })
+    .catch(console.error);
+}
+
 // Admin routes
 // https://www.restapitutorial.com/lessons/httpmethods.html
 
@@ -174,13 +230,43 @@ app.post(
   `/api/${apiVersion}/admin/initial-setup`,
   verifyJWT,
   function (req, res) {
-    res.end("initial setting up");
+    // Get organization name and all VO settings
+    const org_setup = "done";
+    const org_name = req.body.org_name;
+    const org_country = req.body.org_country;
+    const email_host = req.body.email_host;
+    const email_port = req.body.email_port;
+    const email_address = req.body.email_address;
+    const email_password = req.body.email_password;
+    db.query("UPDATE vo_settings SET value = ? WHERE option='org_setup'", [
+      org_setup,
+    ]);
+    db.query("UPDATE vo_settings SET value = ? WHERE option='org_name'", [
+      org_name,
+    ]);
+    db.query("UPDATE vo_settings SET value = ? WHERE option='org_country'", [
+      org_country,
+    ]);
+    db.query("UPDATE vo_settings SET value = ? WHERE option='email_host'", [
+      email_host,
+    ]);
+    db.query("UPDATE vo_settings SET value = ? WHERE option='email_port'", [
+      email_port,
+    ]);
+    db.query("UPDATE vo_settings SET value = ? WHERE option='email_address'", [
+      email_address,
+    ]);
+    db.query("UPDATE vo_settings SET value = ? WHERE option='email_password'", [
+      email_password,
+    ]);
+    res.json({ success: "VO Settings updated." });
+    DBInitialSetup = 1;
   }
 );
 // Get all existing users
 app.get(`/api/${apiVersion}/admin/users`, verifyJWT, function (req, res) {
   // First check if the logged in user is an admin
-  if (req.authData.user.id != "0") {
+  if (req.authData.user.id != adminID) {
     res.status(403).json({
       error: "You are not authorized to access this resource.",
     });
@@ -191,7 +277,25 @@ app.get(`/api/${apiVersion}/admin/users`, verifyJWT, function (req, res) {
   });
 });
 app.post(`/api/${apiVersion}/admin/user`, function (req, res) {
-  res.end("Add new user, email+name");
+  const first_name = req.body.first_name;
+  const email = req.body.email;
+  const password = Math.random().toString(36).slice(-8);
+  db.query("INSERT INTO user(first_name, email, password) VALUES(?, ?, ?)", [
+    first_name,
+    email,
+    password,
+  ]);
+  sendMail(
+    email,
+    "VirtualOffice Account Registration",
+    `<center>
+    <b>Please click the link below to login to your VirtualOffice account,</b><br>
+    <a href=${frontendURL}>Login to VirtualOffice</a> <br><br>
+    Username: ${email} <br>
+    Password: ${password} <br>
+    </center>`
+  );
+  res.json({ success: "User added!" });
 });
 app.delete(`/api/${apiVersion}/admin/user/:id`, function (req, res) {
   db.query(
@@ -202,7 +306,6 @@ app.delete(`/api/${apiVersion}/admin/user/:id`, function (req, res) {
       res.json({ success: "User was deleted from the database." });
     }
   );
-  res.end("Remove user");
 });
 
 // Helpful to reset entire thing to start from scratch
