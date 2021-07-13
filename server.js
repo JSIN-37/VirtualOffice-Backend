@@ -48,16 +48,16 @@ db.connect(function (err) {
     (error, results, fields) => {
       if (error) throw error;
       if (results.length) {
-        if (results[0].value == "done") {
+        if (results[0].vo_value == "done") {
           // Grab all the email settings
           db.query(
             "SELECT vo_value FROM vo_settings WHERE vo_option IN ('email_host','email_port','email_address','email_password')",
             (error, results, fields) => {
               if (error) throw error;
-              emailHost = results[0].value;
-              emailPort = results[1].value;
-              emailAddress = results[2].value;
-              emailPassword = results[3].value;
+              emailHost = results[0].vo_value;
+              emailPort = results[1].vo_value;
+              emailAddress = results[2].vo_value;
+              emailPassword = results[3].vo_value;
               transporter = nodemailer.createTransport({
                 host: emailHost,
                 port: emailPort,
@@ -241,27 +241,33 @@ app.post(
     const email_port = req.body.email_port;
     const email_address = req.body.email_address;
     const email_password = req.body.email_password;
-    db.query("UPDATE vo_settings SET vo_value = ? WHERE vo_option='org_setup'", [
-      org_setup,
-    ]);
+    db.query(
+      "UPDATE vo_settings SET vo_value = ? WHERE vo_option='org_setup'",
+      [org_setup]
+    );
     db.query("UPDATE vo_settings SET vo_value = ? WHERE vo_option='org_name'", [
       org_name,
     ]);
-    db.query("UPDATE vo_settings SET vo_value = ? WHERE vo_option='org_country'", [
-      org_country,
-    ]);
-    db.query("UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_host'", [
-      email_host,
-    ]);
-    db.query("UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_port'", [
-      email_port,
-    ]);
-    db.query("UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_address'", [
-      email_address,
-    ]);
-    db.query("UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_password'", [
-      email_password,
-    ]);
+    db.query(
+      "UPDATE vo_settings SET vo_value = ? WHERE vo_option='org_country'",
+      [org_country]
+    );
+    db.query(
+      "UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_host'",
+      [email_host]
+    );
+    db.query(
+      "UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_port'",
+      [email_port]
+    );
+    db.query(
+      "UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_address'",
+      [email_address]
+    );
+    db.query(
+      "UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_password'",
+      [email_password]
+    );
     res.json({ success: "VO Settings updated." });
     DBInitialSetup = 1;
   }
