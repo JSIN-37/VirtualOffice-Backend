@@ -122,7 +122,7 @@ app.post(`/api/${apiVersion}/login`, (req, res) => {
     (error, results, fields) => {
       if (error) throw error;
       if (results.length) {
-        let info;
+        let info = {};
         // Indicate frontend that an initial setup is required
         if (DBInitialSetup) {
           // First check if this is the admin
@@ -300,10 +300,11 @@ app.post(`/api/${apiVersion}/admin/user`, function (req, res) {
   );
   res.json({ success: "User added!" });
 });
-app.delete(`/api/${apiVersion}/admin/user/:id`, function (req, res) {
+app.delete(`/api/${apiVersion}/admin/user`, function (req, res) {
+  const id = req.body.id;
   db.query(
     "DELETE FROM user WHERE id=?",
-    [req.params.id],
+    [id],
     function (error, results, fields) {
       if (error) throw error;
       res.json({ success: "User was deleted from the database." });
