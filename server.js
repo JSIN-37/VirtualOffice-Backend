@@ -1,6 +1,7 @@
 const serverAddress = "0.0.0.0";
 const serverPort = 3030;
 const frontendURL = "http://localhost:3000";
+const certID = "0";
 
 const DBHost = "localhost";
 const DBUser = "VO";
@@ -28,8 +29,8 @@ const nodemailer = require("nodemailer");
 var transporter;
 
 // Get HTTPS Certs
-var key = fs.readFileSync(`./certs/${serverAddress}.key`);
-var cert = fs.readFileSync(`./certs/${serverAddress}.crt`);
+var key = fs.readFileSync(`./certs/${certID}.key`);
+var cert = fs.readFileSync(`./certs/${certID}.crt`);
 var options = {
   key: key,
   cert: cert,
