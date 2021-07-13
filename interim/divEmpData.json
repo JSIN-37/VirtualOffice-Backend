@@ -1,0 +1,18 @@
+{
+    "emps": [
+        {
+            "name": "A.R Perera",
+            "position": "Management Assistant",
+            "image": "https://www.sedsuoc.lk/img/eb/suvin.png",
+            "email": "suvin@sedsuoc.lk",
+            "status": "Available"
+        },
+        {
+            "name": "Sacheera Wijesekara",
+            "position": "Vice President",
+            "image": "https://www.sedsuoc.lk/img/eb/suvin.png",
+            "email": "sacheera@sedsuoc.lk",
+            "status": "Busy"
+        }
+    ]
+}
