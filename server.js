@@ -1,4 +1,4 @@
-const serverAddress = "localhost";
+const serverAddress = "192.168.1.2";
 const serverPort = 3030;
 const frontendURL = "localhost:3000";
 
