@@ -400,8 +400,25 @@ app.delete(
   }
 );
 
+// Helpful to update the backend on-the-fly
+app.get(`/api/${apiVersion}/admin/backend-update`, (req, res) => {
+  const { exec } = require("child_process");
+  exec("git pull", (err, stdout, stderr) => {
+    if (err) {
+      res.json({ error: "Couldn't update backend." });
+      return;
+    } else {
+      res.json({ success: `${stdout}` });
+      process.exit(1);
+    }
+    // // the *entire* stdout and stderr (buffered)
+    // console.log(`stdout: ${stdout}`);
+    // console.log(`stderr: ${stderr}`);
+  });
+});
+
 // Helpful to reset entire thing to start from scratch
-app.get(`/api/${apiVersion}/admin/reset-db`, async function (req, res) {
+app.get(`/api/${apiVersion}/admin/backend-resetdb`, async function (req, res) {
   console.log("Resetting database...");
   const Importer = require("mysql-import");
   const importer = new Importer({
