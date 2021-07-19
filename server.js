@@ -21,10 +21,10 @@ if (fs.existsSync("./config/prod.env")) {
 
 // Get HTTPS Certs
 var key = fs.readFileSync(
-  `./cert/${serverSettings.serverAddress}/${serverSettings.serverAddress}.key`
+  `./cert/${serverSettings.certID}/${serverSettings.certID}.key`
 );
 var cert = fs.readFileSync(
-  `./cert/${serverSettings.serverAddress}/${serverSettings.serverAddress}.crt`
+  `./cert/${serverSettings.certID}/${serverSettings.certID}.crt`
 );
 var options = {
   key: key,
