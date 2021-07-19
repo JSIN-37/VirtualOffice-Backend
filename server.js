@@ -108,7 +108,11 @@ if (serverSettings.serverHTTP != null) {
     () => {
       var host = httpServer.address().address;
       var port = httpServer.address().port;
-      console.log("[WARNING] HTTP Enabled. Listening at http://%s:%s", host, port);
+      console.log(
+        "[WARNING] HTTP Enabled. Listening at http://%s:%s",
+        host,
+        port
+      );
     }
   );
 }
@@ -399,45 +403,38 @@ app.delete(
 // Helpful to reset entire thing to start from scratch
 app.get(`/api/${apiVersion}/admin/reset-db`, async function (req, res) {
   console.log("Resetting database...");
-  db.query(
-    `SELECT CONCAT('DROP TABLE IF EXISTS ${"`"}', table_name, '${"`"};')
-    AS stm FROM information_schema.tables
-    WHERE table_schema = 'VO';`,
-    function (error, results, fields) {
-      if (error) throw error;
-      console.log("Received list of DROP TABLE statements...");
-      for (var row of results) {
-        db.query(row.stm);
-      }
-      console.log("Dropped all tables.");
-      const Importer = require("mysql-import");
-      const importer = new Importer({
-        host: serverSettings.DBHost,
-        user: serverSettings.DBUser,
-        password: serverSettings.DBPassword,
-        database: serverSettings.DBDatabase,
-      });
+  const Importer = require("mysql-import");
+  const importer = new Importer({
+    host: serverSettings.DBHost,
+    user: serverSettings.DBUser,
+    password: serverSettings.DBPassword,
+    database: serverSettings.DBDatabase,
+  });
 
-      importer.onProgress((progress) => {
-        var percent =
-          Math.floor(
-            (progress.bytes_processed / progress.total_bytes) * 10000
-          ) / 100;
-        console.log(`Database reset ${percent}% completed...`);
-      });
+  importer.onProgress((progress) => {
+    var percent =
+      Math.floor((progress.bytes_processed / progress.total_bytes) * 10000) /
+      100;
+    console.log(`Loading SQL file ${percent}% completed.`);
+  });
 
+  importer
+    .import("./db/deleteDB.sql")
+    .then(() => {
+      console.log(`Deleted entire database.`);
       importer
         .import("./db/mainDB.sql")
         .then(() => {
-          var files_imported = importer.getImported();
-          console.log(`${files_imported.length} SQL file(s) imported.`);
+          console.log(`MainDB restored.`);
         })
         .catch((err) => {
           console.error(err);
         });
-      res.json({ success: "VirtualOffice database reset complete." });
-    }
-  );
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+  res.json({ success: "VirtualOffice database reset complete." });
 });
 
 // For INTERIMS ONLY
