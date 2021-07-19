@@ -103,6 +103,11 @@ app.get(`/api/${apiVersion}/`, function (req, res) {
   res.json({ success: "You've reached VirtualOffice API v1.0." });
 });
 
+// Download certificate for secure communication
+app.get(`/api/${apiVersion}/get-cert`, function (req, res) {
+  res.download("cert/TinyCA/TinyCA.pem", "vo_cert.pem");
+});
+
 // General
 // Login
 app.post(`/api/${apiVersion}/login`, (req, res) => {
