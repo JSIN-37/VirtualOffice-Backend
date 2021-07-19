@@ -4,6 +4,7 @@ var InitialSetup = true;
 
 const express = require("express");
 const https = require("https");
+const http = require("http");
 const fs = require("fs");
 const app = express();
 var cors = require("cors");
@@ -97,6 +98,20 @@ server.listen(serverSettings.serverPort, serverSettings.serverAddress, () => {
     port
   );
 });
+
+// HTTP support for development in Expo - Defined by 'serverHTTP' in config
+var httpServer = http.createServer(app);
+if (serverSettings.serverHTTP != null) {
+  httpServer.listen(
+    serverSettings.serverHTTP,
+    serverSettings.serverAddress,
+    () => {
+      var host = httpServer.address().address;
+      var port = httpServer.address().port;
+      console.log("[WARNING] HTTP Enabled. Listening at http://%s:%s", host, port);
+    }
+  );
+}
 
 // Welcome message for root
 app.get(`/api/${apiVersion}/`, function (req, res) {
