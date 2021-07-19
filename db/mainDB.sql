@@ -25,12 +25,9 @@ CREATE TABLE `vo_settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `vo_settings` (`id`, `vo_option`, `vo_value`) VALUES
-(1, 'org_setup','done'),
-(2, 'org_name','VirtualOffice'),
-(3, 'org_country','Sri Lanka'),
-(4, 'email_host','smtp.gmail.com'),
-(5, 'email_port','587'),
-(6, 'email_address','virtualoffice.jsin38@gmail.com'),
-(7, 'email_password','pnryycbvpjsibjyy');
+(1, 'admin_password','3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2'),
+(2, 'org_setup','done'),
+(3, 'org_name','VirtualOffice'),
+(4, 'org_country','Sri Lanka');
 
 COMMIT;

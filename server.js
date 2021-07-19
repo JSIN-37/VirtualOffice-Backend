@@ -1,22 +1,6 @@
-const serverAddress = "0.0.0.0";
-const serverPort = 3030;
-const frontendURL = "http://localhost:3000";
-const certID = "0";
-
-const DBHost = "localhost";
-const DBUser = "VO";
-const DBPassword = "123";
-const DBDatabase = "VO";
-var DBInitialSetup = true;
-const adminID = 1;
-
-var emailHost = "smtp.gmail.com";
-var emailPort = "587";
-var emailAddress = "";
-var emailPassword = "";
-
-const jwtKey = "keykeykey";
 const apiVersion = "v1";
+var serverSettings = {};
+var InitialSetup = true;
 
 const express = require("express");
 const https = require("https");
@@ -28,9 +12,20 @@ const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 var transporter;
 
+// Load server settings
+if (fs.existsSync("./config/prod.env")) {
+  serverSettings = JSON.parse(fs.readFileSync(`./config/prod.json`));
+} else {
+  serverSettings = JSON.parse(fs.readFileSync(`./config/dev.json`));
+}
+
 // Get HTTPS Certs
-var key = fs.readFileSync(`./certs/${certID}.key`);
-var cert = fs.readFileSync(`./certs/${certID}.crt`);
+var key = fs.readFileSync(
+  `./cert/${serverSettings.serverAddress}/${serverSettings.serverAddress}.key`
+);
+var cert = fs.readFileSync(
+  `./cert/${serverSettings.serverAddress}/${serverSettings.serverAddress}.crt`
+);
 var options = {
   key: key,
   cert: cert,
@@ -38,10 +33,10 @@ var options = {
 
 // Start MySql connection
 const db = mysql.createConnection({
-  host: DBHost, //mysql database host name
-  user: DBUser, //mysql database user name
-  password: DBPassword, //mysql database password
-  database: DBDatabase, //mysql database name
+  host: serverSettings.DBHost, //mysql database host name
+  user: serverSettings.DBUser, //mysql database user name
+  password: serverSettings.DBPassword, //mysql database password
+  database: serverSettings.DBDatabase, //mysql database name
 });
 
 db.connect(function (err) {
@@ -60,30 +55,10 @@ db.connect(function (err) {
       if (error) throw error;
       if (results.length) {
         if (results[0].vo_value == "done") {
-          // Grab all the email settings
-          db.query(
-            "SELECT vo_value FROM vo_settings WHERE vo_option IN ('email_host','email_port','email_address','email_password')",
-            (error, results, fields) => {
-              if (error) throw error;
-              emailHost = results[0].vo_value;
-              emailPort = results[1].vo_value;
-              emailAddress = results[2].vo_value;
-              emailPassword = results[3].vo_value;
-              transporter = nodemailer.createTransport({
-                host: emailHost,
-                port: emailPort,
-                auth: {
-                  user: emailAddress,
-                  pass: emailPassword,
-                },
-              });
-              console.log("Connected with VirtualOffice email.");
-            }
-          );
-
-          DBInitialSetup = false; // The initial setup has been done
+          // Load all the related variables for API services
+          InitialSetup = true; // The initial setup has been done
         } else {
-          DBInitialSetup = true;
+          InitialSetup = false;
           console.log(
             "VirtualOffice DB requires an initial setup by the administrator."
           );
@@ -91,6 +66,16 @@ db.connect(function (err) {
       }
     }
   );
+  // Connect with email service
+  transporter = nodemailer.createTransport({
+    host: serverSettings.emailHost,
+    port: serverSettings.emailPort,
+    auth: {
+      user: serverSettings.emailAddress,
+      pass: serverSettings.emailPassword,
+    },
+  });
+  console.log("Connected with VirtualOffice email.");
 });
 
 app.use(express.json()); // to support JSON-encoded bodies
@@ -103,7 +88,7 @@ app.use(
 app.use(cors());
 
 var server = https.createServer(options, app);
-server.listen(serverPort, serverAddress, () => {
+server.listen(serverSettings.serverPort, serverSettings.serverAddress, () => {
   var host = server.address().address;
   var port = server.address().port;
   console.log(
@@ -112,12 +97,6 @@ server.listen(serverPort, serverAddress, () => {
     port
   );
 });
-
-// var server = app.listen(serverPort, serverAddress, function () {
-//   var host = server.address().address;
-//   var port = server.address().port;
-//   console.log("VirtualOffice Backend is listening at http://%s:%s", host, port);
-// });
 
 // Welcome message for root
 app.get(`/api/${apiVersion}/`, function (req, res) {
@@ -136,7 +115,7 @@ app.post(`/api/${apiVersion}/login`, (req, res) => {
     .createHash("sha512")
     .update(password)
     .digest("hex");
-  // TO DO: Check for validation
+  // TODO: Check for validation
   // Check if user with email and password exist
   db.query(
     "SELECT id, first_name, last_name FROM user WHERE email = ? AND password = ?",
@@ -144,35 +123,28 @@ app.post(`/api/${apiVersion}/login`, (req, res) => {
     (error, results, fields) => {
       if (error) throw error;
       if (results.length) {
-        let info = {};
         // Indicate frontend that an initial setup is required
-        if (DBInitialSetup) {
-          // First check if this is the admin
-          // Admin user id is 0
-          if (results[0].id == adminID) {
-            // console.log(
-            //   `Admin user logged in @ ${new Date().toLocaleString()}`
-            // );
-            info = { initialSetup: true };
-          } else {
-            res.json({
-              error:
-                "VirtualOffice database is not setup yet. Contact administrator.",
-            });
-          }
+        if (!InitialSetup) {
+          res.json({
+            error:
+              "VirtualOffice database is not setup yet. Contact administrator.",
+          });
         }
-        if (results[0].id == adminID) {
-          info.isAdmin = true;
-        }
+        // Adding in hours to the current avail.
+        Date.prototype.addHours = function (h) {
+          this.setHours(this.getHours() + h);
+          return this;
+        };
+        const expire = new Date().addHours(keepLogged ? 48 : 12); // Logged in for 12/48 hours
         const user = {
           id: results[0].id,
           email: results[0].email,
           first_name: results[0].first_name,
           last_name: results[0].last_name,
-          expire: 7200, // Logged in for 2 hours
+          expire: expire,
         };
-        jwt.sign({ user: user }, jwtKey, (err, token) => {
-          res.json({ token, info }); // Just send back the token
+        jwt.sign({ user: user }, serverSettings.jwtKey, (err, token) => {
+          res.json({ token }); // Just send back the token
         });
       } else {
         res.json({ error: "Login failed." });
@@ -181,12 +153,8 @@ app.post(`/api/${apiVersion}/login`, (req, res) => {
   );
   return;
 });
-// Logout
-app.post(`/api/${apiVersion}/logout`, verifyJWT, (req, res) => {
-  res.json(req.authData);
-});
 // Get data about user
-app.get(`/api/${apiVersion}/whoami`, verifyJWT, (req, res) => {
+app.get(`/api/${apiVersion}/whoami`, verifyUser, (req, res) => {
   const userID = req.authData.user.id;
   db.query(
     "SELECT id, first_name, last_name FROM user WHERE id = ?",
@@ -201,6 +169,10 @@ app.get(`/api/${apiVersion}/whoami`, verifyJWT, (req, res) => {
     }
   );
 });
+// Logout
+app.post(`/api/${apiVersion}/logout`, verifyUser, (req, res) => {
+  res.json(req.authData);
+});
 
 // Initial setting up
 app.post(`/api/${apiVersion}/initial-setup`, function (req, res) {
@@ -208,27 +180,60 @@ app.post(`/api/${apiVersion}/initial-setup`, function (req, res) {
 });
 
 // This can be used to verify login status
-function verifyJWT(req, res, next) {
+function verifyUser(req, res, next) {
+  const badToken = () => {
+    res.status(403).json({
+      error: "You are not authenticated.",
+    });
+  };
   const bearerHeader = req.headers["authorization"];
   if (typeof bearerHeader !== "undefined") {
     const bearerToken = bearerHeader.split(" ")[1];
-    // req.token = bearerToken;
-    jwt.verify(bearerToken, jwtKey, (err, authData) => {
+    jwt.verify(bearerToken, serverSettings.jwtKey, (err, authData) => {
       if (err) {
         // Token is bad
-        res.status(403).json({
-          error: "You are not authenticated.",
-        });
+        badToken();
       } else {
         // Token is good
-        req.authData = authData; // Store authData
+        if (dateNow < new Date(req.authData.expire)) {
+          req.authData = authData; // Store authData
+          next();
+        } else {
+          badToken();
+        }
       }
     });
     next();
   } else {
+    badToken();
+  }
+}
+function verifyAdmin(req, res, next) {
+  const badToken = () => {
     res.status(403).json({
       error: "You are not authenticated.",
     });
+  };
+  const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader !== "undefined") {
+    const bearerToken = bearerHeader.split(" ")[1];
+    jwt.verify(bearerToken, serverSettings.jwtKey, (err, authData) => {
+      if (err) {
+        // Token is bad
+        badToken();
+      } else {
+        // Token is good, check if it is admin
+        const dateNow = new Date();
+        if (authData.isAdmin && dateNow < new Date(authData.expire)) {
+          req.authData = authData; // Store authData
+          next();
+        } else {
+          badToken();
+        }
+      }
+    });
+  } else {
+    badToken();
   }
 }
 
@@ -238,12 +243,12 @@ function sendMail(recipients, subject, body) {
       from: '"VirtualOffice" <virtualoffice@jsin37.com>', // sender address
       to: recipients, // list of receivers
       subject: subject, // Subject line
-      // text: "There is a new article. It's about sending emails, check it out!", // plain text body
+      // text: "This is a summary", // plain text body
       html: body, // html body
     })
     .then((info) => {
       // console.log({ info });
-      console.log("VirtualOffice sent an email.");
+      console.log(`VirtualOffice sent an email to ${recipients}`);
     })
     .catch(console.error);
 }
@@ -251,57 +256,77 @@ function sendMail(recipients, subject, body) {
 // Admin routes
 // https://www.restapitutorial.com/lessons/httpmethods.html
 
+// Admin login
+app.post(`/api/${apiVersion}/admin/login`, (req, res) => {
+  const password = req.body.password;
+  // Hash the password
+  const crypto = require("crypto");
+  const hashedPassword = crypto
+    .createHash("sha512")
+    .update(password)
+    .digest("hex");
+  // Check if user with email and password exist
+  db.query(
+    "SELECT vo_value FROM vo_settings WHERE vo_option = 'admin_password'",
+    [hashedPassword],
+    (error, results, fields) => {
+      if (error) throw error;
+      if (results.length) {
+        console.log("System administrator just logged in.");
+        let initialSetup = false;
+        // Indicate frontend that an initial setup is required
+        if (!InitialSetup) {
+          initialSetup = true; // Needs an initial setup
+        } else {
+          initialSetup = false;
+        }
+        // Adding in hours to the current avail.
+        Date.prototype.addHours = function (h) {
+          this.setHours(this.getHours() + h);
+          return this;
+        };
+        const expire = new Date().addHours(1); // Logged in for 2 hours
+        jwt.sign(
+          { expire: expire, isAdmin: true },
+          serverSettings.jwtKey,
+          (err, token) => {
+            res.json({ token, initialSetup }); // Send back the token, expire etc.
+          }
+        );
+      } else {
+        res.json({ error: "Admin login failed." });
+      }
+    }
+  );
+});
+
 app.post(
   `/api/${apiVersion}/admin/initial-setup`,
-  verifyJWT,
+  verifyUser,
   function (req, res) {
     // Get organization name and all VO settings
     const org_setup = "done";
     const org_name = req.body.org_name;
     const org_country = req.body.org_country;
-    const email_host = req.body.email_host;
-    const email_port = req.body.email_port;
-    const email_address = req.body.email_address;
-    const email_password = req.body.email_password;
-    db.query(
-      "UPDATE vo_settings SET vo_value = ? WHERE vo_option='org_setup'",
-      [org_setup]
-    );
-    db.query("UPDATE vo_settings SET vo_value = ? WHERE vo_option='org_name'", [
-      org_name,
-    ]);
-    db.query(
-      "UPDATE vo_settings SET vo_value = ? WHERE vo_option='org_country'",
-      [org_country]
-    );
-    db.query(
-      "UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_host'",
-      [email_host]
-    );
-    db.query(
-      "UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_port'",
-      [email_port]
-    );
-    db.query(
-      "UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_address'",
-      [email_address]
-    );
-    db.query(
-      "UPDATE vo_settings SET vo_value = ? WHERE vo_option='email_password'",
-      [email_password]
-    );
+    const updateVOSetting = (vo_option, vo_value) => {
+      db.query(
+        `UPDATE vo_settings SET vo_value = ? WHERE vo_option='${vo_option}'`,
+        [vo_value],
+        (error) => {
+          if (error) throw error;
+          res.json({ error: "VO Settings update failed." });
+        }
+      );
+    };
+    updateVOSetting("org_setup", org_setup);
+    updateVOSetting("org_name", org_name);
+    updateVOSetting("org_country", org_country);
     res.json({ success: "VO Settings updated." });
-    DBInitialSetup = 1;
+    InitialSetup = 1;
   }
 );
 // Get all existing users
-app.get(`/api/${apiVersion}/admin/users`, verifyJWT, function (req, res) {
-  // First check if the logged in user is an admin
-  if (req.authData.user.id != adminID) {
-    res.status(403).json({
-      error: "You are not authorized to access this resource.",
-    });
-  }
+app.get(`/api/${apiVersion}/admin/users`, verifyAdmin, function (req, res) {
   db.query("SELECT * FROM user", function (error, results, fields) {
     if (error) throw error;
     res.json(results);
@@ -327,25 +352,29 @@ app.post(`/api/${apiVersion}/admin/user`, function (req, res) {
     "VirtualOffice Account Registration",
     `<center>
     <b>Please click the link below to login to your VirtualOffice account,</b><br>
-    <a href=${frontendURL}>Login to VirtualOffice</a> <br><br>
+    <a href=${serverSettings.frontendURL}>Login to VirtualOffice</a> <br><br>
     Username: ${email} <br>
     Password: ${password} <br>
     </center>`
   );
   res.json({ success: "User added!" });
 });
-app.delete(`/api/${apiVersion}/admin/user/:id`, verifyJWT, function (req, res) {
-  const id = req.params.id;
-  db.query(
-    "DELETE FROM user WHERE id=?",
-    [id],
-    function (error, results, fields) {
-      if (error) throw error;
-      console.log(id);
-      res.json({ success: "User was deleted from the database." });
-    }
-  );
-});
+app.delete(
+  `/api/${apiVersion}/admin/user/:id`,
+  verifyAdmin,
+  function (req, res) {
+    const id = req.params.id;
+    db.query(
+      "DELETE FROM user WHERE id=?",
+      [id],
+      function (error, results, fields) {
+        if (error) throw error;
+        console.log(id);
+        res.json({ success: "User was deleted from the database." });
+      }
+    );
+  }
+);
 
 // Helpful to reset entire thing to start from scratch
 app.get(`/api/${apiVersion}/admin/reset-db`, async function (req, res) {
@@ -363,10 +392,10 @@ app.get(`/api/${apiVersion}/admin/reset-db`, async function (req, res) {
       console.log("Dropped all tables.");
       const Importer = require("mysql-import");
       const importer = new Importer({
-        host: DBHost,
-        user: DBUser,
-        password: DBPassword,
-        database: DBDatabase,
+        host: serverSettings.DBHost,
+        user: serverSettings.DBUser,
+        password: serverSettings.DBPassword,
+        database: serverSettings.DBDatabase,
       });
 
       importer.onProgress((progress) => {

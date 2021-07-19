@@ -1,0 +1,14 @@
+{
+    "serverAddress": "0.0.0.0",
+    "serverPort": "3030",
+    "frontendURL": "http://localhost:3000",
+    "DBHost": "localhost",
+    "DBUser": "VO",
+    "DBPassword": "123",
+    "DBDatabase": "VO",
+    "emailHost": "smtp.gmail.com",
+    "emailPort": "587",
+    "emailAddress": "virtualoffice.jsin38@gmail.com",
+    "emailPassword": "notavail",
+    "jwtKey": "v!@#$o$#@!f0987"
+}
