@@ -411,9 +411,6 @@ app.get(`/api/${apiVersion}/admin/backend-update`, (req, res) => {
       res.json({ success: `${stdout}` });
       process.exit(1);
     }
-    // // the *entire* stdout and stderr (buffered)
-    // console.log(`stdout: ${stdout}`);
-    // console.log(`stderr: ${stderr}`);
   });
 });
 
