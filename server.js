@@ -131,7 +131,7 @@ app.get(`/api/${apiV}/get-cert`, function (req, res) {
   res.download("cert/TinyCA/TinyCA.pem", "vo_cert.pem");
 });
 
-// User routes
+// User routes - test change
 require("./routes/user")(serverSettings, app, db, transporter);
 
 // Admin routes
