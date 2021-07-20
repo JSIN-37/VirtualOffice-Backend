@@ -1,6 +1,6 @@
 const apiVersion = "v1";
 var serverSettings = {};
-var InitialSetup = true;
+var initialSetup = true;
 
 const express = require("express");
 const https = require("https");
@@ -57,9 +57,9 @@ db.connect(function (err) {
       if (results.length) {
         if (results[0].vo_value == "done") {
           // Load all the related variables for API services
-          InitialSetup = true; // The initial setup has been done
+          initialSetup = true; // The initial setup has been done
         } else {
-          InitialSetup = false;
+          initialSetup = false;
           console.log(
             "VirtualOffice DB requires an initial setup by the administrator."
           );
@@ -93,7 +93,7 @@ server.listen(serverSettings.serverPort, serverSettings.serverAddress, () => {
   var host = server.address().address;
   var port = server.address().port;
   console.log(
-    "VirtualOffice Backend is listening at https://%s:%s",
+    `VirtualOffice Backend is listening at https://%s:%s/api/${apiVersion}`,
     host,
     port
   );
@@ -109,7 +109,7 @@ if (serverSettings.serverHTTP != null) {
       var host = httpServer.address().address;
       var port = httpServer.address().port;
       console.log(
-        "[WARNING] HTTP Enabled. Listening at http://%s:%s",
+        `[WARNING] HTTP Enabled. Listening at http://%s:%s/api/${apiVersion}`,
         host,
         port
       );
@@ -142,13 +142,13 @@ app.post(`/api/${apiVersion}/login`, (req, res) => {
   // TODO: Check for validation
   // Check if user with email and password exist
   db.query(
-    "SELECT id, first_name, last_name FROM user WHERE email = ? AND password = ?",
+    "SELECT id, first_name, last_name FROM vo_user WHERE email = ? AND password = ?",
     [email, hashedPassword],
     (error, results, fields) => {
       if (error) throw error;
       if (results.length) {
         // Indicate frontend that an initial setup is required
-        if (!InitialSetup) {
+        if (!initialSetup) {
           res.json({
             error:
               "VirtualOffice database is not setup yet. Contact administrator.",
@@ -181,7 +181,7 @@ app.post(`/api/${apiVersion}/login`, (req, res) => {
 app.get(`/api/${apiVersion}/whoami`, verifyUser, (req, res) => {
   const userID = req.authData.user.id;
   db.query(
-    "SELECT id, first_name, last_name FROM user WHERE id = ?",
+    "SELECT id, first_name, last_name FROM vo_user WHERE id = ?",
     [userID],
     (error, results, fields) => {
       if (error) throw error;
@@ -297,13 +297,6 @@ app.post(`/api/${apiVersion}/admin/login`, (req, res) => {
       if (error) throw error;
       if (results.length) {
         console.log("System administrator just logged in.");
-        let initialSetup = false;
-        // Indicate frontend that an initial setup is required
-        if (!InitialSetup) {
-          initialSetup = true; // Needs an initial setup
-        } else {
-          initialSetup = false;
-        }
         // Adding in hours to the current avail.
         Date.prototype.addHours = function (h) {
           this.setHours(this.getHours() + h);
@@ -346,12 +339,12 @@ app.post(
     updateVOSetting("org_name", org_name);
     updateVOSetting("org_country", org_country);
     res.json({ success: "VO Settings updated." });
-    InitialSetup = 1;
+    initialSetup = 1;
   }
 );
 // Get all existing users
 app.get(`/api/${apiVersion}/admin/users`, verifyAdmin, function (req, res) {
-  db.query("SELECT * FROM user", function (error, results, fields) {
+  db.query("SELECT * FROM vo_user", function (error, results, fields) {
     if (error) throw error;
     res.json(results);
   });
@@ -366,7 +359,7 @@ app.post(`/api/${apiVersion}/admin/user`, function (req, res) {
     .createHash("sha512")
     .update(password)
     .digest("hex");
-  db.query("INSERT INTO user(first_name, email, password) VALUES(?, ?, ?)", [
+  db.query("INSERT INTO vo_user(first_name, email, password) VALUES(?, ?, ?)", [
     first_name,
     email,
     hashedPassword,
@@ -389,7 +382,7 @@ app.delete(
   function (req, res) {
     const id = req.params.id;
     db.query(
-      "DELETE FROM user WHERE id=?",
+      "DELETE FROM vo_user WHERE id=?",
       [id],
       function (error, results, fields) {
         if (error) throw error;
