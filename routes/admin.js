@@ -70,7 +70,6 @@ module.exports = (serverSettings, app, db, email) => {
             this.setHours(this.getHours() + h);
             return this;
           };
-          serverSettings.initialSetup = false;
           const expire = new Date().addHours(1); // Logged in for 2 hours
           jwt.sign(
             { expire: expire, isAdmin: true },
