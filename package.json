@@ -23,6 +23,8 @@
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
     "mysql-import": "^5.0.21",
-    "nodemailer": "^6.6.2"
+    "nodemailer": "^6.6.2",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.1.6"
   }
 }
