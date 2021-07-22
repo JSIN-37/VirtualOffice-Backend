@@ -3,7 +3,6 @@ var serverSettings = {};
 // Essentials
 const fs = require("fs");
 const express = require("express");
-const app = express();
 // HTTPS, HTTP and CORS
 const https = require("https");
 const http = require("http");
@@ -12,6 +11,9 @@ var cors = require("cors");
 const mysql = require("mysql");
 const nodemailer = require("nodemailer");
 var transporter;
+// Swagger
+const swaggerUI = require("swagger-ui-express");
+const swaggerJSDoc = require("swagger-jsdoc");
 // Routes
 const backdoorRouter = require("./routes/backdoor");
 const userRouter = require("./routes/user");
@@ -33,7 +35,7 @@ var key = fs.readFileSync(
 var cert = fs.readFileSync(
   `./cert/${serverSettings.certID}/${serverSettings.certID}.crt`
 );
-var options = {
+var certOptions = {
   key: key,
   cert: cert,
 };
@@ -87,6 +89,7 @@ db.connect(function (err) {
   console.log("Connected with VirtualOffice email.");
 });
 
+const app = express();
 app.use(express.json()); // to support JSON-encoded bodies
 app.use(
   express.urlencoded({
@@ -96,7 +99,7 @@ app.use(
 );
 app.use(cors());
 
-var server = https.createServer(options, app);
+var server = https.createServer(certOptions, app);
 server.listen(serverSettings.serverPort, serverSettings.serverAddress, () => {
   var host = server.address().address;
   var port = server.address().port;
@@ -108,8 +111,9 @@ server.listen(serverSettings.serverPort, serverSettings.serverAddress, () => {
 });
 
 // HTTP support for development in Expo (React Native mobile frontend) - Defined by 'serverHTTP' in config
-var httpServer = http.createServer(app);
+var httpServer;
 if (serverSettings.serverHTTP != null) {
+  httpServer = http.createServer(app);
   httpServer.listen(
     serverSettings.serverHTTP,
     serverSettings.serverAddress,
@@ -124,6 +128,34 @@ if (serverSettings.serverHTTP != null) {
     }
   );
 }
+
+// Swagger configuration
+let swServers = [];
+swServers.push({
+  url: `https://${serverSettings.serverAddress}:${serverSettings.serverPort}/api/${apiV}`,
+  description: "HTTPS",
+});
+if (serverSettings.serverHTTP) {
+  swServers.push({
+    url: `http://${serverSettings.serverAddress}:${serverSettings.serverHTTP}/api/${apiV}`,
+    description: "HTTP",
+  });
+}
+const swOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "VirtualOffice API",
+      version: `${apiV.charAt(1)}.0.0`,
+      description: "Backend of VirtualOffice Software Suite",
+    },
+    servers: swServers,
+  },
+  apis: ["./routes/*.js"],
+};
+
+const swSpecs = swaggerJSDoc(swOptions);
+app.use(`/api/${apiV}/docs`, swaggerUI.serve, swaggerUI.setup(swSpecs));
 
 // Welcome message for root
 app.get(`/api/${apiV}/`, function (req, res) {

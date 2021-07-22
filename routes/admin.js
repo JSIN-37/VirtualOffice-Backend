@@ -49,8 +49,38 @@ function sendMail(email, recipients, subject, body) {
     .catch(console.error);
 }
 ///////////////////////////////////////////////////////////////////////////
-
-// Admin login
+/**
+ * @swagger
+ * /admin/login:
+ *  post:
+ *    summary: System administrator login
+ *    tags: [Admin]
+ *    requestBody:
+ *       description: Plain administrator password
+ *       required: true
+ *       content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                password:
+ *                  type: string
+ *                  example: Admin@123
+ *    responses:
+ *      200:
+ *        description: Authorization successful.
+ *        produces:
+ *          - application/json
+ *        schema:
+ *          type: object
+ *          properties:
+ *            token : 
+ *               type: string
+ *            initialSetup: 
+ *               type: boolean
+ *      401:
+ *        description: Authorization failed.
+ */
 router.post(`/login`, (req, res) => {
   const password = req.body.password;
   // Hash the password
@@ -81,7 +111,7 @@ router.post(`/login`, (req, res) => {
           }
         );
       } else {
-        res.json({ error: "Admin login failed." });
+        res.status(401).json({ error: "Admin login failed." });
       }
     }
   );
