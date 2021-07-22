@@ -1,17 +1,22 @@
-const apiVersion = "v1"; // API version
+const apiV = "v1"; // API version
 var serverSettings = {};
-
+// Essentials
 const fs = require("fs");
 const express = require("express");
 const app = express();
-
+// HTTPS, HTTP and CORS
 const https = require("https");
 const http = require("http");
 var cors = require("cors");
-
+// DB and Email
 const mysql = require("mysql");
 const nodemailer = require("nodemailer");
 var transporter;
+// Routes
+const backdoorRouter = require("./routes/backdoor");
+const userRouter = require("./routes/user");
+const adminRouter = require("./routes/admin");
+const interimRouter = require("./routes/interim");
 
 // Load server settings
 if (fs.existsSync("./config/prod.env")) {
@@ -20,8 +25,6 @@ if (fs.existsSync("./config/prod.env")) {
   serverSettings = JSON.parse(fs.readFileSync(`./config/dev.json`));
 }
 serverSettings.initialSetup = true;
-serverSettings.apiVersion = apiVersion;
-const apiV = apiVersion; // For ease of use
 
 // Get HTTPS Certs
 var key = fs.readFileSync(
@@ -80,6 +83,7 @@ db.connect(function (err) {
       pass: serverSettings.emailPassword,
     },
   });
+  app.email = transporter;
   console.log("Connected with VirtualOffice email.");
 });
 
@@ -123,52 +127,19 @@ if (serverSettings.serverHTTP != null) {
 
 // Welcome message for root
 app.get(`/api/${apiV}/`, function (req, res) {
-  res.json({ success: "You've reached VirtualOffice API v1.0." });
+  res.json({ success: `You've reached VirtualOffice API ${apiV}.0.` });
 });
 
-// Download certificate for secure communication
-app.get(`/api/${apiV}/get-cert`, function (req, res) {
-  res.download("cert/TinyCA/TinyCA.pem", "vo_cert.pem");
-});
+// Pass down global objects to use in routes
+app.db = db;
+app.email = transporter; // This is also defined when transporter is configured ^
+app.ss = serverSettings;
 
-// User routes - test change
-require("./routes/user")(serverSettings, app, db, transporter);
-
-// Admin routes
-require("./routes/admin")(serverSettings, app, db, transporter);
-
-// For INTERIMS ONLY
-app.get(`/api/${apiV}/interim/todos`, (req, res) => {
-  let rawdata = fs.readFileSync("./interim/todoData.json");
-  let data = JSON.parse(rawdata).todos;
-  res.json(data);
-});
-app.get(`/api/${apiV}/interim/doing`, (req, res) => {
-  let rawdata = fs.readFileSync("./interim/doingData.json");
-  let data = JSON.parse(rawdata).doing;
-  res.json(data);
-});
-app.get(`/api/${apiV}/interim/teams`, (req, res) => {
-  let rawdata = fs.readFileSync("./interim/teamData.json");
-  let data = JSON.parse(rawdata).teams;
-  res.json(data);
-});
-app.delete(`/api/${apiV}/interim/teams/:id`, (req, res) => {
-  let rawdata = fs.readFileSync("./interim/teamData.json");
-  let data = JSON.parse(rawdata).teams;
-  var filtered = data.filter((a) => a.id != req.params.id);
-  fs.writeFileSync(
-    "./interim/teamData.json",
-    JSON.stringify({ teams: filtered }),
-    "utf8"
-  );
-  res.json(filtered);
-});
-app.get(`/api/${apiV}/interim/emps`, (req, res) => {
-  let rawdata = fs.readFileSync("./interim/divEmpData.json");
-  let data = JSON.parse(rawdata).emps;
-  res.json(data);
-});
+// Load all routes
+app.use(`/api/${apiV}/user`, userRouter);
+app.use(`/api/${apiV}/admin`, adminRouter);
+app.use(`/api/${apiV}/interim`, interimRouter);
+app.use(`/api/${apiV}/backdoor`, backdoorRouter);
 
 // Global catch all for everything else
 const notFoundErr = (res) => {
