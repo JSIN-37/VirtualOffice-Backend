@@ -74,9 +74,9 @@ function sendMail(email, recipients, subject, body) {
  *        schema:
  *          type: object
  *          properties:
- *            token : 
+ *            token :
  *               type: string
- *            initialSetup: 
+ *            initialSetup:
  *               type: boolean
  *      401:
  *        description: Authorization failed.
@@ -96,20 +96,25 @@ router.post(`/login`, (req, res) => {
     (error, results, fields) => {
       if (error) throw error;
       if (results.length) {
-        console.log("System administrator just logged in.");
-        // Adding in hours to the current avail.
-        Date.prototype.addHours = function (h) {
-          this.setHours(this.getHours() + h);
-          return this;
-        };
-        const expire = new Date().addHours(1); // Logged in for 2 hours
-        jwt.sign(
-          { expire: expire, isAdmin: true },
-          req.app.ss.jwtKey,
-          (err, token) => {
-            res.json({ token, initialSetup: req.app.ss.initialSetup }); // Send back the token, expire etc.
-          }
-        );
+        // Check if the password matches!
+        if (results[0].vo_value == hashedPassword) {
+          console.log("System administrator just logged in.");
+          // Adding in hours to the current avail.
+          Date.prototype.addHours = function (h) {
+            this.setHours(this.getHours() + h);
+            return this;
+          };
+          const expire = new Date().addHours(1); // Logged in for 2 hours
+          jwt.sign(
+            { expire: expire, isAdmin: true },
+            req.app.ss.jwtKey,
+            (err, token) => {
+              res.json({ token, initialSetup: req.app.ss.initialSetup }); // Send back the token, expire etc.
+            }
+          );
+        } else {
+          res.status(401).json({ error: "Admin login failed." });
+        }
       } else {
         res.status(401).json({ error: "Admin login failed." });
       }
