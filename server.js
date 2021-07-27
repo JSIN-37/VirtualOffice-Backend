@@ -130,14 +130,17 @@ if (serverSettings.serverHTTP != null) {
 }
 
 // Swagger configuration
+let swaggerIP = serverSettings.swaggerIP
+  ? serverSettings.swaggerIP
+  : serverSettings.serverAddress;
 let swServers = [];
 swServers.push({
-  url: `https://${serverSettings.serverAddress}:${serverSettings.serverPort}/api/${apiV}`,
+  url: `https://${swaggerIP}:${serverSettings.serverPort}/api/${apiV}`,
   description: "HTTPS",
 });
 if (serverSettings.serverHTTP) {
   swServers.push({
-    url: `http://${serverSettings.serverAddress}:${serverSettings.serverHTTP}/api/${apiV}`,
+    url: `http://${swaggerIP}:${serverSettings.serverHTTP}/api/${apiV}`,
     description: "HTTP",
   });
 }

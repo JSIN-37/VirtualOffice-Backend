@@ -35,11 +35,49 @@ function verifyUser(req, res, next) {
   }
 }
 ///////////////////////////////////////////////////////////////////////////
-
+/**
+ * @swagger
+ * /user/login:
+ *  post:
+ *    summary: User login
+ *    tags: [User]
+ *    produces:
+ *      - application/json
+ *    requestBody:
+ *       description: Needs email, password and 'remember me'
+ *       required: true
+ *       content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                email:
+ *                  type: string
+ *                  example: user@email.com
+ *                password:
+ *                  type: string
+ *                  example: user@123
+ *                rememberMe:
+ *                  type: boolean
+ *                  example: true
+ *    responses:
+ *      200:
+ *        description: Authorization successful.
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                token :
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmUiOiIyMDIxLTA3LTIyVDA4OjAwOjM3LjQyNFoiLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE2MjY5MzcyMzd9.GQDuIYjccpPFB7BPxMUtRnMurIkO13BJOTG3oq52nq4
+ *      401:
+ *        description: Authorization failed.
+ */
 router.post(`/login`, (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const keepLogged = req.body.keepLogged; // Increase expire time if this is enabled
+  const rememberMe = req.body.rememberMe; // Increase expire time if this is enabled
   // Hash the password
   const crypto = require("crypto");
   const hashedPassword = crypto
@@ -66,7 +104,7 @@ router.post(`/login`, (req, res) => {
           this.setHours(this.getHours() + h);
           return this;
         };
-        const expire = new Date().addHours(keepLogged ? 48 : 12); // Logged in for 12/48 hours
+        const expire = new Date().addHours(rememberMe ? 48 : 12); // Logged in for 12/48 hours
         const user = {
           id: results[0].id,
           email: results[0].email,
@@ -81,7 +119,7 @@ router.post(`/login`, (req, res) => {
           }
         );
       } else {
-        res.json({ error: "Login failed." });
+        res.status(401).json({ error: "Login failed." });
       }
     }
   );
