@@ -3,6 +3,7 @@
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
+const ss = process.env; // Server settings
 
 ///////////////////////////////////////////////// Common functions
 // This can be used to verify login status
@@ -15,7 +16,7 @@ function verifyUser(req, res, next) {
   const bearerHeader = req.headers["authorization"];
   if (typeof bearerHeader !== "undefined") {
     const bearerToken = bearerHeader.split(" ")[1];
-    jwt.verify(bearerToken, req.app.ss.jwtKey, (err, authData) => {
+    jwt.verify(bearerToken, ss.JWT_KEY, (err, authData) => {
       if (err) {
         // Token is bad
         badToken();
@@ -74,7 +75,7 @@ function verifyUser(req, res, next) {
  *      401:
  *        description: Authorization failed.
  */
-router.post(`/login`, (req, res) => {
+router.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   const rememberMe = req.body.rememberMe; // Increase expire time if this is enabled
@@ -93,7 +94,7 @@ router.post(`/login`, (req, res) => {
       if (error) throw error;
       if (results.length) {
         // Indicate frontend that an initial setup is required
-        if (!req.app.ss.initialSetup) {
+        if (!ss.INITIAL_SETUP) {
           res.json({
             error:
               "VirtualOffice database is not setup yet. Contact administrator.",
@@ -113,7 +114,7 @@ router.post(`/login`, (req, res) => {
         };
         jwt.sign(
           { user: user, expire: expire },
-          req.app.ss.jwtKey,
+          ss.JWT_KEY,
           (err, token) => {
             res.json({ token }); // Just send back the token
           }
@@ -127,7 +128,7 @@ router.post(`/login`, (req, res) => {
 });
 
 // Get data about user
-router.get(`/whoami`, verifyUser, (req, res) => {
+router.get("/whoami", verifyUser, (req, res) => {
   const userID = req.authData.user.id;
   req.app.db.query(
     "SELECT id, first_name, last_name FROM vo_user WHERE id = ?",
@@ -144,12 +145,12 @@ router.get(`/whoami`, verifyUser, (req, res) => {
 });
 
 // Logout
-router.post(`/logout`, verifyUser, (req, res) => {
+router.post("/logout", verifyUser, (req, res) => {
   res.json(req.authData);
 });
 
 // Initial setting up
-router.get(`/initial-setup`, (req, res) => {
+router.get("/initial-setup", (req, res) => {
   res.end("initial user set up");
 });
 

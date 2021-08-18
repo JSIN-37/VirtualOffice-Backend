@@ -3,6 +3,7 @@
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
+const ss = process.env; // Server settings
 
 // TODO: Implement a secret authentication for this backdoor, for now its open for anyone
 
@@ -22,7 +23,7 @@ const jwt = require("jsonwebtoken");
  *      404:
  *        description: Certificate not found.
  */
-router.get(`/cert`, function (req, res) {
+router.get("/cert", function (req, res) {
   res.download("cert/TinyCA/TinyCA.pem", "vo_cert.pem");
 });
 
@@ -38,7 +39,7 @@ router.get(`/cert`, function (req, res) {
  *      500:
  *        description: Error, couldn't update backend. Failed on restore/delete.
  */
-router.get(`/update`, (req, res) => {
+router.get("/update", (req, res) => {
   const { exec } = require("child_process");
   exec("git pull", (err, stdout, stderr) => {
     if (err) {
@@ -67,14 +68,14 @@ router.get(`/update`, (req, res) => {
  *      500:
  *        description: Error, couldn't reset database.
  */
-router.get(`/resetdb`, async function (req, res) {
+router.get("/resetdb", async function (req, res) {
   console.log("Resetting database...");
   const Importer = require("mysql-import");
   const importer = new Importer({
-    host: req.app.ss.DBHost,
-    user: req.app.ss.DBUser,
-    password: req.app.ss.DBPassword,
-    database: req.app.ss.DBDatabase,
+    host: ss.DB_HOST,
+    user: ss.DB_USER,
+    password: ss.DB_PASSWORD,
+    database: ss.DB_DATABASE,
   });
 
   importer.onProgress((progress) => {

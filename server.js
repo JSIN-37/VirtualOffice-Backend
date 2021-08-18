@@ -1,5 +1,5 @@
 const apiV = "v1"; // API version
-var serverSettings = {};
+
 // Essentials
 const fs = require("fs");
 const express = require("express");
@@ -22,18 +22,21 @@ const interimRouter = require("./routes/interim");
 
 // Load server settings
 if (fs.existsSync("./config/prod.env")) {
-  serverSettings = JSON.parse(fs.readFileSync(`./config/prod.json`));
+  // ss = JSON.parse(fs.readFileSync(`./config/prod.json`));
+  require("dotenv").config({ path: "./config/prod" });
 } else {
-  serverSettings = JSON.parse(fs.readFileSync(`./config/dev.json`));
+  // ss = JSON.parse(fs.readFileSync(`./config/dev.json`));
+  require("dotenv").config({ path: "./config/dev" });
 }
-serverSettings.initialSetup = true;
+const ss = process.env;
+ss.INITIAL_SETUP = true;
 
 // Get HTTPS Certs
 var key = fs.readFileSync(
-  `./cert/${serverSettings.certID}/${serverSettings.certID}.key`
+  `./cert/${ss.CERTIFICATE_ID}/${ss.CERTIFICATE_ID}.key`
 );
 var cert = fs.readFileSync(
-  `./cert/${serverSettings.certID}/${serverSettings.certID}.crt`
+  `./cert/${ss.CERTIFICATE_ID}/${ss.CERTIFICATE_ID}.crt`
 );
 var certOptions = {
   key: key,
@@ -42,10 +45,10 @@ var certOptions = {
 
 // Start MySql connection
 const db = mysql.createConnection({
-  host: serverSettings.DBHost, //mysql database host name
-  user: serverSettings.DBUser, //mysql database user name
-  password: serverSettings.DBPassword, //mysql database password
-  database: serverSettings.DBDatabase, //mysql database name
+  host: ss.DB_HOST, //mysql database host name
+  user: ss.DB_USER, //mysql database user name
+  password: ss.DB_PASSWORD, //mysql database password
+  database: ss.DB_DATABASE, //mysql database name
 });
 
 // Check DB and email connection
@@ -66,9 +69,9 @@ db.connect(function (err) {
       if (results.length) {
         if (results[0].vo_value == "done") {
           // Load all the related variables for API services
-          serverSettings.initialSetup = true; // The initial setup has been done
+          ss.INITIAL_SETUP = true; // The initial setup has been done
         } else {
-          serverSettings.initialSetup = false;
+          ss.INITIAL_SETUP = false;
           console.log(
             "VirtualOffice DB requires an initial setup by the administrator."
           );
@@ -78,11 +81,11 @@ db.connect(function (err) {
   );
   // Connect with email service
   transporter = nodemailer.createTransport({
-    host: serverSettings.emailHost,
-    port: serverSettings.emailPort,
+    host: ss.EMAIL_HOST,
+    port: ss.EMAIL_PORT,
     auth: {
-      user: serverSettings.emailAddress,
-      pass: serverSettings.emailPassword,
+      user: ss.EMAIL_ADDRESS,
+      pass: ss.EMAIL_PASSWORD,
     },
   });
   app.email = transporter;
@@ -100,7 +103,7 @@ app.use(
 app.use(cors());
 
 var server = https.createServer(certOptions, app);
-server.listen(serverSettings.serverPort, serverSettings.serverAddress, () => {
+server.listen(ss.SERVER_PORT, ss.SERVER_ADDRESS, () => {
   var host = server.address().address;
   var port = server.address().port;
   console.log(
@@ -110,13 +113,13 @@ server.listen(serverSettings.serverPort, serverSettings.serverAddress, () => {
   );
 });
 
-// HTTP support for development in Expo (React Native mobile frontend) - Defined by 'serverHTTP' in config
+// HTTP support for development in Expo (React Native mobile frontend) - Defined by 'SERVER_HTTP' in config
 var httpServer;
-if (serverSettings.serverHTTP != null) {
+if (ss.SERVER_HTTP != null) {
   httpServer = http.createServer(app);
   httpServer.listen(
-    serverSettings.serverHTTP,
-    serverSettings.serverAddress,
+    ss.SERVER_HTTP,
+    ss.SERVER_ADDRESS,
     () => {
       var host = httpServer.address().address;
       var port = httpServer.address().port;
@@ -129,18 +132,18 @@ if (serverSettings.serverHTTP != null) {
   );
 }
 
-// Swagger configuration
-let swaggerIP = serverSettings.swaggerIP
-  ? serverSettings.swaggerIP
-  : serverSettings.serverAddress;
+// Swagger configuration - 'SWAGGER_IP' in config
+let swaggerIP = ss.SWAGGER_IP
+  ? ss.SWAGGER_IP
+  : ss.SERVER_ADDRESS;
 let swServers = [];
 swServers.push({
-  url: `https://${swaggerIP}:${serverSettings.serverPort}/api/${apiV}`,
+  url: `https://${swaggerIP}:${ss.SERVER_PORT}/api/${apiV}`,
   description: "HTTPS",
 });
-if (serverSettings.serverHTTP) {
+if (ss.SERVER_HTTP) {
   swServers.push({
-    url: `http://${swaggerIP}:${serverSettings.serverHTTP}/api/${apiV}`,
+    url: `http://${swaggerIP}:${ss.SERVER_HTTP}/api/${apiV}`,
     description: "HTTP",
   });
 }
@@ -168,13 +171,17 @@ app.get(`/api/${apiV}/`, function (req, res) {
 // Pass down global objects to use in routes
 app.db = db;
 app.email = transporter; // This is also defined when transporter is configured ^
-app.ss = serverSettings;
+// global.ss = ss; // Make this global for use with auth
+
+// Routers that need server settings(ss)
+const authRouter = require("./routes/auth");
 
 // Load all routes
 app.use(`/api/${apiV}/user`, userRouter);
 app.use(`/api/${apiV}/admin`, adminRouter);
 app.use(`/api/${apiV}/interim`, interimRouter);
 app.use(`/api/${apiV}/backdoor`, backdoorRouter);
+app.use(`/api/${apiV}/auth`, authRouter);
 
 // Global catch all for everything else
 const notFoundErr = (res) => {
