@@ -1,4 +1,4 @@
 node_modules/
 interim/
-config/dev.json
-config/prod.json
+config/*
+!config/example
