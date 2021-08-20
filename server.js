@@ -117,25 +117,19 @@ server.listen(ss.SERVER_PORT, ss.SERVER_ADDRESS, () => {
 var httpServer;
 if (ss.SERVER_HTTP != null) {
   httpServer = http.createServer(app);
-  httpServer.listen(
-    ss.SERVER_HTTP,
-    ss.SERVER_ADDRESS,
-    () => {
-      var host = httpServer.address().address;
-      var port = httpServer.address().port;
-      console.log(
-        `[WARNING] HTTP Enabled. Listening at http://%s:%s/api/${apiV}`,
-        host,
-        port
-      );
-    }
-  );
+  httpServer.listen(ss.SERVER_HTTP, ss.SERVER_ADDRESS, () => {
+    var host = httpServer.address().address;
+    var port = httpServer.address().port;
+    console.log(
+      `[WARNING] HTTP Enabled. Listening at http://%s:%s/api/${apiV}`,
+      host,
+      port
+    );
+  });
 }
 
 // Swagger configuration - 'SWAGGER_IP' in config
-let swaggerIP = ss.SWAGGER_IP
-  ? ss.SWAGGER_IP
-  : ss.SERVER_ADDRESS;
+let swaggerIP = ss.SWAGGER_IP ? ss.SWAGGER_IP : ss.SERVER_ADDRESS;
 let swServers = [];
 swServers.push({
   url: `https://${swaggerIP}:${ss.SERVER_PORT}/api/${apiV}`,
@@ -162,6 +156,13 @@ const swOptions = {
 
 const swSpecs = swaggerJSDoc(swOptions);
 app.use(`/api/${apiV}/docs`, swaggerUI.serve, swaggerUI.setup(swSpecs));
+console.log(
+  `
+  -------------------------------------------------------------------------------------
+  VirtualOffice Documentation - https://${swaggerIP}:${ss.SERVER_PORT}/api/${apiV}/docs
+  -------------------------------------------------------------------------------------
+  `
+);
 
 // Welcome message for root
 app.get(`/api/${apiV}/`, function (req, res) {
