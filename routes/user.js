@@ -127,7 +127,21 @@ router.post("/login", (req, res) => {
   return;
 });
 
-// Get data about user
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /user/whoami:
+ *  get:
+ *    summary: Gets data about logged in user [token required]
+ *    tags: [User]
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      200:
+ *        description: Authorization successful, gets data about id, first_name, last_name
+ *      401:
+ *        description: Authorization failed.
+ */
 router.get("/whoami", verifyUser, (req, res) => {
   const userID = req.authData.user.id;
   req.app.db.query(
@@ -153,5 +167,76 @@ router.post("/logout", verifyUser, (req, res) => {
 router.get("/initial-setup", (req, res) => {
   res.end("initial user set up");
 });
+
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /user/team:
+ *  get:
+ *    summary: Gets data about available teams for user
+ *    tags: [User]
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      200:
+ *        description: Successful.
+ */
+
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /user/team/id:
+ *  get:
+ *    summary: Gets data about the specific team
+ *    tags: [User]
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      200:
+ *        description: Successful.
+ */
+
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /user/team:
+ *  post:
+ *    summary: Create a new team 
+ *    tags: [User]
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      200:
+ *        description: Successful.
+ */
+
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /user/team/id:
+ *  put:
+ *    summary: Update a team 
+ *    tags: [User]
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      200:
+ *        description: Successful.
+ */
+
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /user/team/id:
+ *  delete:
+ *    summary: Delete a team 
+ *    tags: [User]
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      200:
+ *        description: Successful.
+ */
+
 
 module.exports = router;
