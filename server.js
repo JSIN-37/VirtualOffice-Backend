@@ -21,12 +21,17 @@ const adminRouter = require("./routes/admin");
 const interimRouter = require("./routes/interim");
 
 // Load server settings
-if (fs.existsSync("./config/prod.env")) {
-  // ss = JSON.parse(fs.readFileSync(`./config/prod.json`));
+if (fs.existsSync("./config/prod")) {
   require("dotenv").config({ path: "./config/prod" });
 } else {
-  // ss = JSON.parse(fs.readFileSync(`./config/dev.json`));
-  require("dotenv").config({ path: "./config/dev" });
+  if (fs.existsSync("./config/dev")) {
+    require("dotenv").config({ path: "./config/dev" });
+  } else {
+    console.log(
+      "Couldn't find a valid configuration.\nCheck config 'directory' for either 'prod' or 'dev' files?"
+    );
+    process.exit();
+  }
 }
 const ss = process.env;
 ss.INITIAL_SETUP = true;
