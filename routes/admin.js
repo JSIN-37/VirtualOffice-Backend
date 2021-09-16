@@ -191,4 +191,35 @@ router.delete("/user/:id", verifyAdmin, function (req, res) {
   );
 });
 
+router.get("/divisions", verifyAdmin, function (req, res) {
+  req.app.db.query(
+    "SELECT * FROM vo_division",
+    function (error, results, fields) {
+      if (error) throw error;
+      res.json(results);
+    }
+  );
+});
+
+router.post("/division", verifyAdmin, function (req, res) {
+  console.log(req.body);
+  const division_name = req.body.divisionName;
+  const description = req.body.description;
+  req.app.db.query(
+    "INSERT INTO vo_division(name, description) VALUES(?, ?)",
+    [division_name, description],
+    (error, results, fields) => {
+      if (error) throw error;
+      req.app.db.query(
+        "SELECT * FROM vo_division WHERE id = ?",
+        [results.insertId],
+        (error, results, fields) => {
+          if (error) throw error;
+          res.json(results[0]);
+        }
+      );
+    }
+  );
+});
+
 module.exports = router;
