@@ -12,22 +12,6 @@ INSERT INTO `vo_settings` (`vo_option`, `vo_value`) VALUES
 ('org_name','VirtualOffice'),
 ('org_country','Sri Lanka');
 
-CREATE TABLE `vo_division` (
-  `id` int(11) PRIMARY KEY AUTO_INCREMENT,
-  `name` varchar(255),
-  `description` varchar(500),
-  `parent_id`  int(11),
-  FOREIGN KEY (parent_id) REFERENCES vo_division(id)
-);
-
-CREATE TABLE `vo_division_child` (
-  `parent_id` int(11),
-  `child_id` int(11),
-  PRIMARY KEY (parent_id, child_id),
-  FOREIGN KEY (parent_id) REFERENCES vo_division(id),
-  FOREIGN KEY (child_id) REFERENCES vo_division(id)
-);
-
 CREATE TABLE `vo_user` (
   `id` int(11) PRIMARY KEY AUTO_INCREMENT,
   `first_name` varchar(255),
@@ -38,8 +22,15 @@ CREATE TABLE `vo_user` (
   `dob` date,
   `gender` char(1),
   `address` varchar(400),
-  `division_id` int(11),
-  FOREIGN KEY (division_id) REFERENCES vo_division(id)
+  `division_id` int(11)
+);
+
+CREATE TABLE `vo_division` (
+  `id` int(11) PRIMARY KEY AUTO_INCREMENT,
+  `name` varchar(255),
+  `description` varchar(500),
+  `hod_id` int(11),
+  FOREIGN KEY (hod_id) REFERENCES vo_user(id)
 );
 
 INSERT INTO `vo_user` (`first_name`, `last_name`, `email`, `contact_number`, `password`, `dob`, `gender`, `address`, `division_id`) VALUES
