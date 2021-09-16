@@ -4,6 +4,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
+const { randomInt } = require("crypto");
 
 router.get("/todos", (req, res) => {
   let rawdata = fs.readFileSync("./interim/todoData.json");
@@ -19,6 +20,19 @@ router.get("/teams", (req, res) => {
   let rawdata = fs.readFileSync("./interim/teamData.json");
   let data = JSON.parse(rawdata).teams;
   res.json(data);
+});
+router.post("/teams", (req, res) => {
+  let rawdata = fs.readFileSync("./interim/teamData.json");
+  let data = JSON.parse(rawdata).teams;
+  var newTeam = req.body;
+  newTeam.id = randomInt(5000);
+  data.push(newTeam);
+  fs.writeFileSync(
+    "./interim/teamData.json",
+    JSON.stringify({ teams: data }),
+    "utf8"
+  );
+  res.json(newTeam);
 });
 router.delete("/teams/:id", (req, res) => {
   let rawdata = fs.readFileSync("./interim/teamData.json");
