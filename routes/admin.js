@@ -222,4 +222,33 @@ router.post("/division", verifyAdmin, function (req, res) {
   );
 });
 
+router.delete("/division/:id", verifyAdmin, function (req, res) {
+  req.app.db.query(
+    "DELETE FROM vo_division WHERE id = ?",
+    [req.params.id],
+    (error, results, fields) => {
+      if (error) throw error;
+      res.json({ success: "Division was deleted from the database." });
+    }
+  );
+});
+
+router.patch("/division/:id", verifyAdmin, function (req, res) {
+  req.app.db.query(
+    "UPDATE vo_division SET description = ? WHERE id = ?",
+    [req.body.description, req.params.id],
+    (error, results, fields) => {
+      if (error) throw error;
+      req.app.db.query(
+        "SELECT * FROM vo_division WHERE id = ?",
+        [req.params.id],
+        (error, results, fields) => {
+          if (error) throw error;
+          res.json(results[0]);
+        }
+      );
+    }
+  );
+});
+
 module.exports = router;
