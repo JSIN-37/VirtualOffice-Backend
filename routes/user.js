@@ -283,4 +283,31 @@ router.post("/checkout", verifyUser, (req, res) => {
   );
 });
 
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /user/checkcheckin:
+ *  get:
+ *    summary: Check if checked in already.
+ *    tags: [User]
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      200:
+ *        description: Entire worklog db entry as a JSON object (only if checked in).
+ */
+router.get("/checkcheckin", verifyUser, (req, res) => {
+  const userID = req.authData.user.id;
+  var dayStartEpoch = new Date().setHours(0, 0, 0, 0) / 1000;
+  var dayEndEpoch = new Date().setHours(24, 0, 0, 0) / 1000;
+  req.app.db.query(
+    "SELECT * FROM vo_worklog WHERE start_time BETWEEN ? AND ? AND user_id = ?",
+    [dayStartEpoch, dayEndEpoch, userID],
+    (error, results, fields) => {
+      if (error) throw error;
+      res.json(results[0]);
+    }
+  );
+});
+
 module.exports = router;
