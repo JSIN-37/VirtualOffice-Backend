@@ -82,5 +82,13 @@ CREATE TABLE `vo_team_member` (
   FOREIGN KEY (member_id) REFERENCES vo_user(id)
 );
 
+CREATE TABLE `vo_worklog` (
+  `id` int(11) PRIMARY KEY AUTO_INCREMENT,
+  `user_id` int(11),
+  `start_time` int(11),
+  `end_time` int(11),
+  FOREIGN KEY (user_id) REFERENCES vo_user(id)
+);
+
 
 COMMIT;

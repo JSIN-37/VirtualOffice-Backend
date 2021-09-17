@@ -112,13 +112,9 @@ router.post("/login", (req, res) => {
           first_name: results[0].first_name,
           last_name: results[0].last_name,
         };
-        jwt.sign(
-          { user: user, expire: expire },
-          ss.JWT_KEY,
-          (err, token) => {
-            res.json({ token }); // Just send back the token
-          }
-        );
+        jwt.sign({ user: user, expire: expire }, ss.JWT_KEY, (err, token) => {
+          res.json({ token }); // Just send back the token
+        });
       } else {
         res.status(401).json({ error: "Login failed." });
       }
@@ -201,7 +197,7 @@ router.get("/initial-setup", (req, res) => {
  * @swagger
  * /user/team:
  *  post:
- *    summary: Create a new team 
+ *    summary: Create a new team
  *    tags: [User]
  *    produces:
  *      - application/json
@@ -215,7 +211,7 @@ router.get("/initial-setup", (req, res) => {
  * @swagger
  * /user/team/id:
  *  put:
- *    summary: Update a team 
+ *    summary: Update a team
  *    tags: [User]
  *    produces:
  *      - application/json
@@ -229,7 +225,7 @@ router.get("/initial-setup", (req, res) => {
  * @swagger
  * /user/team/id:
  *  delete:
- *    summary: Delete a team 
+ *    summary: Delete a team
  *    tags: [User]
  *    produces:
  *      - application/json
@@ -238,5 +234,53 @@ router.get("/initial-setup", (req, res) => {
  *        description: Successful.
  */
 
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /user/checkin:
+ *  get:
+ *    summary: Sends back the user check-in time and ID
+ *    tags: [User]
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      200:
+ *        description: Successful.
+ */
+router.post("/checkin", verifyUser, (req, res) => {
+  const userID = req.authData.user.id;
+  const startLocation = "startLocation";
+  const epochNow = Math.round(Date.now() / 1000);
+  req.app.db.query(
+    "INSERT INTO vo_worklog(user_id, start_time) VALUES(?, ?)",
+    [userID, epochNow],
+    (error, results, fields) => {
+      if (error) throw error;
+      const lastInsert = results.insertId;
+      res.json({ id: lastInsert, start_time: epochNow });
+    }
+  );
+});
+
+router.post("/checkout", verifyUser, (req, res) => {
+  const id = req.body.id;
+  const endLocation = "endLocation";
+  const epochNow = Math.round(Date.now() / 1000);
+  req.app.db.query(
+    "UPDATE vo_worklog SET end_time = ? WHERE id = ?",
+    [epochNow, id],
+    (error, results, fields) => {
+      if (error) throw error;
+      req.app.db.query(
+        "SELECT * FROM vo_worklog WHERE id = ?",
+        [id],
+        (error, results, fields) => {
+          if (error) throw error;
+          res.json(results[0]);
+        }
+      );
+    }
+  );
+});
 
 module.exports = router;
