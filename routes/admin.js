@@ -146,10 +146,13 @@ router.post("/initial-setup", verifyAdmin, function (req, res) {
 });
 // Get all existing users
 router.get("/users", verifyAdmin, function (req, res) {
-  req.app.db.query("SELECT * FROM vo_user", function (error, results, fields) {
-    if (error) throw error;
-    res.json(results);
-  });
+  req.app.db.query(
+    "SELECT vo_user.id AS id,vo_user.first_name AS first_name,vo_user.last_name AS last_name,vo_user.email AS email, vo_role.name AS role FROM vo_user, vo_user_role, vo_role WHERE vo_user.id = vo_user_role.user_id AND vo_role.id = vo_user_role.role_id",
+    function (error, results, fields) {
+      if (error) throw error;
+      res.json(results);
+    }
+  );
 });
 router.post("/user", function (req, res) {
   const first_name = req.body.first_name;
