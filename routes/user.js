@@ -171,8 +171,6 @@ router.get("/initial-setup", (req, res) => {
  *  get:
  *    summary: Gets data about available teams for user
  *    tags: [User]
- *    produces:
- *      - application/json
  *    responses:
  *      200:
  *        description: Successful.
@@ -185,8 +183,6 @@ router.get("/initial-setup", (req, res) => {
  *  get:
  *    summary: Gets data about the specific team
  *    tags: [User]
- *    produces:
- *      - application/json
  *    responses:
  *      200:
  *        description: Successful.
@@ -199,8 +195,6 @@ router.get("/initial-setup", (req, res) => {
  *  post:
  *    summary: Create a new team
  *    tags: [User]
- *    produces:
- *      - application/json
  *    responses:
  *      200:
  *        description: Successful.
@@ -213,8 +207,6 @@ router.get("/initial-setup", (req, res) => {
  *  put:
  *    summary: Update a team
  *    tags: [User]
- *    produces:
- *      - application/json
  *    responses:
  *      200:
  *        description: Successful.
@@ -227,8 +219,6 @@ router.get("/initial-setup", (req, res) => {
  *  delete:
  *    summary: Delete a team
  *    tags: [User]
- *    produces:
- *      - application/json
  *    responses:
  *      200:
  *        description: Successful.
@@ -238,14 +228,12 @@ router.get("/initial-setup", (req, res) => {
 /**
  * @swagger
  * /user/checkin:
- *  get:
- *    summary: Sends back the user check-in time and ID
+ *  post:
+ *    summary: Start daily work check-in. Pass in location (not yet).
  *    tags: [User]
- *    produces:
- *      - application/json
  *    responses:
  *      200:
- *        description: Successful.
+ *        description: id=ID of the worklog, start_time=server epoch time (start)
  */
 router.post("/checkin", verifyUser, (req, res) => {
   const userID = req.authData.user.id;
@@ -261,7 +249,19 @@ router.post("/checkin", verifyUser, (req, res) => {
     }
   );
 });
-
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /user/checkout:
+ *  post:
+ *    summary: Start daily work check-out. id=worklog's id that was received from checkin. Pass in location (not yet).
+ *    tags: [User]
+ *    produces:
+ *      - application/json
+ *    responses:
+ *      200:
+ *        description: Entire worklog db entry as a JSON object.
+ */
 router.post("/checkout", verifyUser, (req, res) => {
   const id = req.body.id;
   const endLocation = "endLocation";
