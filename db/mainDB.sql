@@ -87,6 +87,7 @@ CREATE TABLE `vo_worklog` (
   `user_id` int(11),
   `start_time` int(11),
   `end_time` int(11),
+  `full_half` CHAR(1),
   FOREIGN KEY (user_id) REFERENCES vo_user(id)
 );
 

@@ -266,17 +266,33 @@ router.post("/checkout", verifyUser, (req, res) => {
   const id = req.body.id;
   const endLocation = "endLocation";
   const epochNow = Math.round(Date.now() / 1000);
+  const fullDay = 8; // Hours
+  const halfDay = 5; // Hours
   req.app.db.query(
-    "UPDATE vo_worklog SET end_time = ? WHERE id = ?",
-    [epochNow, id],
+    "SELECT start_time FROM vo_worklog WHERE id = ?",
+    [id],
     (error, results, fields) => {
       if (error) throw error;
+      // Calculate full/half day
+      const whatDay = Math.floor((epochNow - results[0].start_time) / 3600);
+      var verdict = "N";
+      // Full!
+      if (whatDay >= fullDay) verdict = "F";
+      // Half!
+      else if (whatDay >= halfDay) verdict = "H";
       req.app.db.query(
-        "SELECT * FROM vo_worklog WHERE id = ?",
-        [id],
+        "UPDATE vo_worklog SET end_time = ?, full_half = ? WHERE id = ?",
+        [epochNow, verdict, id],
         (error, results, fields) => {
           if (error) throw error;
-          res.json(results[0]);
+          req.app.db.query(
+            "SELECT * FROM vo_worklog WHERE id = ?",
+            [id],
+            (error, results, fields) => {
+              if (error) throw error;
+              res.json(results[0]);
+            }
+          );
         }
       );
     }
