@@ -256,8 +256,6 @@ router.post("/checkin", verifyUser, (req, res) => {
  *  post:
  *    summary: Start daily work check-out. id=worklog's id that was received from checkin. Pass in location (not yet).
  *    tags: [User]
- *    produces:
- *      - application/json
  *    responses:
  *      200:
  *        description: Entire worklog db entry as a JSON object.
@@ -306,8 +304,6 @@ router.post("/checkout", verifyUser, (req, res) => {
  *  get:
  *    summary: Check if checked in already.
  *    tags: [User]
- *    produces:
- *      - application/json
  *    responses:
  *      200:
  *        description: Entire worklog db entry as a JSON object (only if checked in).
@@ -324,6 +320,27 @@ router.get("/checkcheckin", verifyUser, (req, res) => {
       res.json(results[0]);
     }
   );
+});
+
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /user/all-keys:
+ *  get:
+ *    summary: Get all client keys.
+ *    tags: [User]
+ *    responses:
+ *      200:
+ *        description: Entire key list.
+ */
+router.get("/all-keys", verifyUser, (req, res) => {
+  const error = "Key not found in configuration file.";
+  res.json({
+    EMAIL_CLIENT_ID: ss.EMAIL_CLIENT_ID ? ss.EMAIL_CLIENT_ID : error,
+    EMAIL_API_KEY: ss.EMAIL_API_KEY ? ss.EMAIL_API_KEY : error,
+    FILE_SHARE_APP_ID: ss.FILE_SHARE_APP_ID ? ss.FILE_SHARE_APP_ID : error,
+    FILE_SHARE_DEV_KEY: ss.FILE_SHARE_DEV_KEY ? ss.FILE_SHARE_DEV_KEY : error,
+  });
 });
 
 module.exports = router;
