@@ -110,4 +110,47 @@ router.get("/resetdb", async function (req, res) {
   res.json({ success: "VirtualOffice database reset complete." });
 });
 
+/**
+ * @swagger
+ * /backdoor/dummy:
+ *  get:
+ *    summary: Load all dummy data into database
+ *    tags: [Backdoor]
+ *    responses:
+ *      200:
+ *        description: Database dummy load successful.
+ *      500:
+ *        description: Error, couldn't load dummy.
+ */
+router.get("/dummy", async function (req, res) {
+  console.log("Loading dummy data...");
+  const Importer = require("mysql-import");
+  const importer = new Importer({
+    host: ss.DB_HOST,
+    user: ss.DB_USER,
+    password: ss.DB_PASSWORD,
+    database: ss.DB_DATABASE,
+  });
+
+  importer.onProgress((progress) => {
+    var percent =
+      Math.floor((progress.bytes_processed / progress.total_bytes) * 10000) /
+      100;
+    console.log(`Loading SQL file ${percent}% completed.`);
+  });
+
+  importer
+    .import("./db/dummyDB.sql")
+    .then(() => {
+      console.log(`dummyDB completely loaded.`);
+    })
+    .catch((err) => {
+      console.error(err);
+      res
+        .status(500)
+        .json({ error: "Couldn't load dummyDB." });
+    });
+  res.json({ success: "VirtualOffice database dummy data loading complete." });
+});
+
 module.exports = router;
