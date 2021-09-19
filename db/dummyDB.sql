@@ -2,7 +2,6 @@ START TRANSACTION;
 
 
 INSERT INTO `vo_user` (`id`, `first_name`, `last_name`, `email`, `contact_number`, `password`, `dob`, `gender`, `address`, `division_id`) VALUES
-(5, 'Janadhi', 'Uyanhewa', 'uyanhewajanadhi@gmail.com', '0768333893', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '0000-00-00', 'F', '4/2, Udahamulla, Nugegoda', 3),
 (6, 'Queen', 'Ulrich', 'ulrichqueen@gmail.com', '0768333893', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '1998-08-16', 'F', '14/2, Rail way road, Nugegoda', 3),
 (7, 'Shakya', 'Abeytunge', 'shakya@gmail.com', '0761234567', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '1998-09-03', 'F', '21, Flower Lane, Battaramulla', 2),
 (8, 'Sidath', 'Samarasekara', 'sidath@gmail.com', '0761235689', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '1998-09-23', 'M', '12, Nawam Mawatha,Battaramulla', 3),
@@ -26,20 +25,20 @@ INSERT INTO `vo_user` (`id`, `first_name`, `last_name`, `email`, `contact_number
 
 
 INSERT INTO `vo_division` (`id`, `name`, `description`, `hod_id`) VALUES
-(2, 'General Administration', NULL, 1),
-(3, 'Academic & Publications', NULL, 2),
-(4, 'Examinations & Registration', NULL, 3),
-(5, 'Establishments', NULL, 4),
-(6, 'Postgraduate & Quality Assurance', NULL, 8),
-(7, 'External Degrees Centre', NULL, 6),
-(8, 'Director’s Office', NULL, 7),
-(9, 'Academic, Publications & Welfare', NULL, 4),
-(10, 'Examinations & Registration', NULL, 9),
-(11, 'Engineering Division', NULL, 10),
-(12, 'Finance Division', NULL, 4),
-(13, 'The Library', NULL, 2),
-(14, 'External Degrees Centre (EDC)', NULL, 5),
-(15, 'Network Operations Centre', NULL, 6);
+(2, 'General Administration', 'The  General Administration Division is responsible for matters relating to the rehabilitation works, maintenance of buildings and equipment, providing services to the staff and students, procurement and communication facilities.', 1),
+(3, 'Academic & Publications', 'The Academic & Publications Division is responsible for procedures related to matters such as publications by the academic establishment, the collection of data and the compilation of University statistics, as well as registration related proceedings of several postgraduate programs of the University', 2),
+(4, 'Examinations & Registration', 'Examinations & Registration Division provides various important student related services such as Student Registration, Undergraduate and Postgraduate Examinations Related Activities, Conducting Aptitude Tests, Issuing Examination Results, Issuing Academic Transcripts and Degree Certificates etc.', 3),
+(5, 'Establishments', 'Establishments Division is the recruitment of qualified staff and retaining them in the service in line with the corporate goals of the University. The Establishments Division also assists the University Council in the development, maintenance and interpretation of human resources management procedures in accordance with the Establishment Code and Rule and Regulations of the University Grants Commission and Administrative policies of the University.', 4),
+(6, 'Postgraduate & Quality Assurance', 'The Postgraduate Studies Division was set up under the Dean of each Faculty for the administration of Research Degrees in the Faculty.\r\n\r\nIt is headed by the Director of Postgraduate Studies, who is also the ex-officio Chairman of the Higher Degrees Committee of each Faculty.', 8),
+(7, 'External Degrees Centre', 'External Degrees and Extension Course Unit of University is offering six degrees from two majors from Faculty of Management Studies and Commerce and Faculty of Humanities and Social Sciences. ', 6),
+(8, 'Director’s Office', 'Director’s office is where the Director functions as the Principal Executive Officer as well as the Principal Academic Officer in the University.  And takes care of both academic and non-academic activities for the smooth functioning of the University.', 7),
+(9, 'Academic, Publications & Welfare', 'The Student & Staff Welfare office is responsible for the welfare of all students enrolled at the University. It works closely with all administrative and academic departments to assist students to familiarize the environment and achieve their academic goals as well as assist students with the culture and the community. The mission of the division is to provide an enabling environment that aims at quality student services and a range of learning, social, cultural, health, and recreational opport', 4),
+(10, 'Examinations & Registration', 'Examinations & Registration Division provides various important student related services such as Student Registration, Undergraduate and Postgraduate Examinations Related Activities, Conducting Aptitude Tests, Issuing Examination Results, Issuing Academic Transcripts and Degree Certificates etc.', 9),
+(11, 'Engineering Division', 'Pursuing fundamental electrical, electronic and photonic research at the material, device and system levels with a focus on creating integrated solutions in the fields of nanotechnology, sensing, energy generation, energy conversion, displays and communications.', 10),
+(12, 'Finance Division', 'The Division is headed by a Bursar, 02 Deputy Bursars, 01 Senior Assistant Bursar, along with a staff consisting of 05 Book Keepers, 01 Data Administrator, 02 Computer Applications Assistants, 12 Clerks, 02 Shroffs 01 Book Binder, 03 Laborers. \r\nThe primary objective of the Finance Division is to plan, organize, direct and control financial activities such as procurement and the proper utilization of funds efficiently and effectively to meet the goals and objectives in line with the strategic pl', 4),
+(13, 'The Library', 'The University library system consists of the Central Library and faculty libraries. \r\nThe Central Library is situated in a five storied building between the Law Faculty Building Complex and the Arts Faculty Building Complex. The library contains books and periodicals in Humanities, Education, Law, Management, and Social Sciences. The main entrance to the library is facing the Reid Avenue.\r\n', 2),
+(14, 'External Degrees Centre (EDC)', 'The external degree centre offers degrees to university students who have not means to be physically present within the geographic territory of the institution.', 5),
+(15, 'Network Operations Centre', 'A network operations center (NOC) is a centralized location where IT teams can continuously monitor the performance and health of a network. The NOC serves as the first line of defense against network disruptions and failures.\r\n\r\n', 6);
 
 
 COMMIT;

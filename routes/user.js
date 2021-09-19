@@ -88,7 +88,7 @@ router.post("/login", (req, res) => {
   // TODO: Check for validation
   // Check if user with email and password exist
   req.app.db.query(
-    "SELECT id, first_name, last_name, division_id FROM vo_user WHERE email = ? AND password = ?",
+    "SELECT vo_user.id AS id, vo_user.first_name AS first_name, vo_user.last_name AS last_name, vo_user.division_id AS division_id, vo_role.name AS role_name FROM vo_role LEFT JOIN vo_user ON vo_user.role_id = vo_role.id WHERE email = ? AND password = ?",
     [email, hashedPassword],
     (error, results, fields) => {
       if (error) throw error;
@@ -114,7 +114,7 @@ router.post("/login", (req, res) => {
           division_id: results[0].division_id,
         };
         jwt.sign({ user: user, expire: expire }, ss.JWT_KEY, (err, token) => {
-          res.json({ token }); // Just send back the token
+          res.json({ token, roleName: results[0].role_name }); // Just send back the token
         });
       } else {
         res.status(401).json({ error: "Login failed." });

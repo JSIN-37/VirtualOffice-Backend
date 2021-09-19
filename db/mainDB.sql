@@ -22,7 +22,8 @@ CREATE TABLE `vo_user` (
   `dob` date,
   `gender` char(1),
   `address` varchar(400),
-  `division_id` int(11)
+  `division_id` int(11),
+  `role_id` int(11)
 );
 
 CREATE TABLE `vo_division` (
@@ -36,11 +37,12 @@ CREATE TABLE `vo_division` (
 INSERT INTO `vo_division` (`name`, `description`) VALUES
 ('VirtualOffice', 'Default division of VO');
 
-INSERT INTO `vo_user` (`first_name`, `last_name`, `email`, `contact_number`, `password`, `dob`, `gender`, `address`, `division_id`) VALUES
-('Admin', '', 'admin@vo', '0000000000', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', 'VirtualOffice', 1),
-('Naushikha', 'Jayawickrama', 'naushikha@outlook.com', '0763316991', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '1997-09-09', 'M', 'School Lane, Kadawatha.', 1),
-('Imashi', 'Dissanayake', 'imashi921a@gmail.com', '0703081775', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '1997-09-21', 'F', 'Armpitiya, Kandy.', 1),
-('John', 'Doe', 'john.doe@gmail.com', '0123456789', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2020-11-01', 'M', 'Sri Lanka', 1);
+INSERT INTO `vo_user` (`first_name`, `last_name`, `email`, `contact_number`, `password`, `dob`, `gender`, `address`, `division_id`, `role_id`) VALUES
+('Naushikha', 'Jayawickrama', 'naushikha@vo.com', '0000000000', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', 'VirtualOffice', 1, 1),
+('Imashi', 'Dissanayake', 'imashi@vo.com', '0000000000', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', 'VirtualOffice', 1, 2),
+('Shakya', 'Abeytunge', 'shakya@vo.com', '0000000000', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', 'VirtualOffice', 1, 2),
+('Janadhi', 'Uyanhewa', 'janadhi@vo.com', '0000000000', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', 'VirtualOffice', 1, 2),
+('Sidath', 'Samarasinghe', 'sidath@vo.com', '0000000000', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', 'VirtualOffice', 1, 2);
 
 CREATE TABLE `vo_role` (
   `id` int(11) PRIMARY KEY AUTO_INCREMENT,
@@ -52,20 +54,9 @@ CREATE TABLE `vo_role` (
 );
 
 INSERT INTO `vo_role` (`name`, `create_team`, `monitor_attendance`, `monitor_tasks`, `create_tasks`) VALUES
-('Employee', 0, 0, 0, 0),
+('Worker', 0, 0, 0, 0),
+('Head of Division', 1, 1, 1, 1),
 ('CEO/Director', 1, 1, 1, 1);
-
-CREATE TABLE `vo_user_role` (
-  `user_id` int(11),
-  `role_id`  int(11),
-  PRIMARY KEY (user_id, role_id),
-  FOREIGN KEY (user_id) REFERENCES vo_user(id),
-  FOREIGN KEY (role_id) REFERENCES vo_role(id)
-);
-
-INSERT INTO `vo_user_role` (`user_id`, `role_id`) VALUES
-(1, 1),
-(2, 2);
 
 CREATE TABLE `vo_team` (
   `id` int(11) PRIMARY KEY AUTO_INCREMENT,
