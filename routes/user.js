@@ -129,13 +129,11 @@ router.post("/login", (req, res) => {
  * @swagger
  * /user/whoami:
  *  get:
- *    summary: Gets data about logged in user [token required]
+ *    summary: Gets data about logged in user. [TOKEN REQUIRED]
  *    tags: [User]
  *    responses:
  *      200:
- *        description: Authorization successful, gets data about id, first_name, last_name
- *      401:
- *        description: Authorization failed.
+ *        description: Data about id, first_name, last_name
  */
 router.get("/whoami", verifyUser, (req, res) => {
   const userID = req.authData.user.id;
@@ -158,11 +156,11 @@ router.get("/whoami", verifyUser, (req, res) => {
  * @swagger
  * /user/division-users:
  *  get:
- *    summary: Gets data about all users in current user's division [token required]
+ *    summary: Gets data about all users in current user's division. [TOKEN REQUIRED]
  *    tags: [User]
  *    responses:
  *      200:
- *        description: Authorization successful, gets data array about [{id, first_name, last_name, email, contact_number}, ...]
+ *        description: Data array in the form [{id, first_name, last_name, email, contact_number}, {...}, ...]
  */
  router.get("/division-users", verifyUser, (req, res) => {
   const division_id = req.authData.user.division_id;
@@ -193,7 +191,7 @@ router.get("/initial-setup", (req, res) => {
  * @swagger
  * /user/team:
  *  get:
- *    summary: Gets data about available teams for user
+ *    summary: Gets data about available teams for user. [TOKEN REQUIRED]
  *    tags: [User]
  *    responses:
  *      200:
@@ -205,7 +203,7 @@ router.get("/initial-setup", (req, res) => {
  * @swagger
  * /user/team/id:
  *  get:
- *    summary: Gets data about the specific team
+ *    summary: Gets data about the specific team. [TOKEN REQUIRED]
  *    tags: [User]
  *    responses:
  *      200:
@@ -217,7 +215,7 @@ router.get("/initial-setup", (req, res) => {
  * @swagger
  * /user/team:
  *  post:
- *    summary: Create a new team
+ *    summary: Create a new team. [TOKEN REQUIRED]
  *    tags: [User]
  *    responses:
  *      200:
@@ -229,7 +227,7 @@ router.get("/initial-setup", (req, res) => {
  * @swagger
  * /user/team/id:
  *  put:
- *    summary: Update a team
+ *    summary: Update a team. [TOKEN REQUIRED]
  *    tags: [User]
  *    responses:
  *      200:
@@ -241,7 +239,7 @@ router.get("/initial-setup", (req, res) => {
  * @swagger
  * /user/team/id:
  *  delete:
- *    summary: Delete a team
+ *    summary: Delete a team. [TOKEN REQUIRED]
  *    tags: [User]
  *    responses:
  *      200:
@@ -253,7 +251,7 @@ router.get("/initial-setup", (req, res) => {
  * @swagger
  * /user/checkin:
  *  post:
- *    summary: Start daily work check-in. Pass in location (not yet).
+ *    summary: Start daily work check-in. Pass in location (not yet). [TOKEN REQUIRED]
  *    tags: [User]
  *    responses:
  *      200:
@@ -278,7 +276,7 @@ router.post("/checkin", verifyUser, (req, res) => {
  * @swagger
  * /user/checkout:
  *  post:
- *    summary: Start daily work check-out. id=worklog's id that was received from checkin. Pass in location (not yet).
+ *    summary: Start daily work check-out. id=worklog's id that was received from checkin. Pass in location (not yet). [TOKEN REQUIRED]
  *    tags: [User]
  *    responses:
  *      200:
@@ -326,7 +324,7 @@ router.post("/checkout", verifyUser, (req, res) => {
  * @swagger
  * /user/checkcheckin:
  *  get:
- *    summary: Check if checked in already.
+ *    summary: Check if checked in already. [TOKEN REQUIRED]
  *    tags: [User]
  *    responses:
  *      200:
@@ -351,7 +349,7 @@ router.get("/checkcheckin", verifyUser, (req, res) => {
  * @swagger
  * /user/all-keys:
  *  get:
- *    summary: Get all client keys.
+ *    summary: Get all client keys. [TOKEN REQUIRED]
  *    tags: [User]
  *    responses:
  *      200:

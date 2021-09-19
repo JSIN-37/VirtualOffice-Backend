@@ -167,6 +167,18 @@ router.get("/users", verifyAdmin, (req, res) => {
     }
   );
 });
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /admin/user:
+ *  post:
+ *    summary: Create new user and send activation email. [TOKEN REQUIRED]
+ *    description: Input data in the form, {first_name, email} **[REQUIRED]**
+ *    tags: [Admin]
+ *    responses:
+ *      200:
+ *        description: Array in the form, [{id, first_name, last_name, email, contact_number}, {...}, ...]
+ */
 router.post("/user", function (req, res) {
   const first_name = req.body.first_name;
   const email = req.body.email;
@@ -206,7 +218,17 @@ router.delete("/user/:id", verifyAdmin, function (req, res) {
     }
   );
 });
-
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /admin/divisions:
+ *  get:
+ *    summary: Get all divisions. [TOKEN REQUIRED]
+ *    tags: [Admin]
+ *    responses:
+ *      200:
+ *        description: Array in the form, [{id, name, description, hod_id}, {...}, ...]
+ */
 router.get("/divisions", verifyAdmin, function (req, res) {
   req.app.db.query(
     "SELECT * FROM vo_division",
@@ -216,7 +238,17 @@ router.get("/divisions", verifyAdmin, function (req, res) {
     }
   );
 });
-
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /admin/divisions:
+ *  get:
+ *    summary: Get all divisions. [TOKEN REQUIRED]
+ *    tags: [Admin]
+ *    responses:
+ *      200:
+ *        description: Array in the form, [{id, name, description, hod_id}, {...}, ...]
+ */
 router.post("/division", verifyAdmin, function (req, res) {
   console.log(req.body);
   const division_name = req.body.divisionName;
@@ -237,7 +269,17 @@ router.post("/division", verifyAdmin, function (req, res) {
     }
   );
 });
-
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /admin/division/{id}:
+ *  delete:
+ *    summary: Delete division by given ID. [TOKEN REQUIRED]
+ *    tags: [Admin]
+ *    responses:
+ *      200:
+ *        description: Success, division deleted from database.
+ */
 router.delete("/division/:id", verifyAdmin, function (req, res) {
   req.app.db.query(
     "DELETE FROM vo_division WHERE id = ?",
@@ -248,7 +290,18 @@ router.delete("/division/:id", verifyAdmin, function (req, res) {
     }
   );
 });
-
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /admin/divisions/{id}:
+ *  patch:
+ *    summary: Update division by given ID. [TOKEN REQUIRED]
+ *    description: Input data in the form, {name, description, hod_id} **[REQUIRED]**
+ *    tags: [Admin]
+ *    responses:
+ *      200:
+ *        description: Updated array in the form, [{id, name, description, hod_id}, {...}, ...]
+ */
 router.patch("/division/:id", verifyAdmin, function (req, res) {
   req.app.db.query(
     "UPDATE vo_division SET description = ? WHERE id = ?",
