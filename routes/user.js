@@ -372,7 +372,7 @@ router.get("/checkcheckin", verifyUser, (req, res) => {
 /**
  * @swagger
  * /user/allcheckins:
- *  get:
+ *  post:
  *    summary: Get all worklog entries on all users. [TOKEN REQUIRED]
  *    description: ,{filterDate, employeeID} | both parameters are optional, if they are provided it will filter based on that date or employee
  *    tags: [User]
@@ -380,7 +380,7 @@ router.get("/checkcheckin", verifyUser, (req, res) => {
  *      200:
  *        description: Array in the form, [{id, first_name, last_name, user_id, ...}, {...}, ...] entire worklog along with user data
  */
-router.get("/allcheckins", verifyUser, (req, res) => {
+router.post("/allcheckins", verifyUser, (req, res) => {
   const division_id = req.authData.user.division_id;
   const filter_date = req.body.filterDate;
   const employee_id = req.body.employeeID;
