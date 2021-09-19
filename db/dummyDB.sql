@@ -26,20 +26,20 @@ INSERT INTO `vo_user` (`id`, `first_name`, `last_name`, `email`, `contact_number
 
 
 INSERT INTO `vo_division` (`id`, `name`, `description`, `hod_id`) VALUES
-(1, 'General Administration', NULL, 1),
-(2, 'Academic & Publications', NULL, 2),
-(3, 'Examinations & Registration', NULL, 3),
-(4, 'Establishments', NULL, 4),
-(5, 'Postgraduate & Quality Assurance', NULL, 8),
-(6, 'External Degrees Centre', NULL, 6),
-(7, 'Director’s Office', NULL, 7),
-(8, 'Academic, Publications & Welfare', NULL, 4),
-(9, 'Examinations & Registration', NULL, 9),
-(10, 'Engineering Division', NULL, 10),
-(11, 'Finance Division', NULL, 4),
-(12, 'The Library', NULL, 2),
-(13, 'External Degrees Centre (EDC)', NULL, 5),
-(14, 'Network Operations Centre', NULL, 6);
+(2, 'General Administration', NULL, 1),
+(3, 'Academic & Publications', NULL, 2),
+(4, 'Examinations & Registration', NULL, 3),
+(5, 'Establishments', NULL, 4),
+(6, 'Postgraduate & Quality Assurance', NULL, 8),
+(7, 'External Degrees Centre', NULL, 6),
+(8, 'Director’s Office', NULL, 7),
+(9, 'Academic, Publications & Welfare', NULL, 4),
+(10, 'Examinations & Registration', NULL, 9),
+(11, 'Engineering Division', NULL, 10),
+(12, 'Finance Division', NULL, 4),
+(13, 'The Library', NULL, 2),
+(14, 'External Degrees Centre (EDC)', NULL, 5),
+(15, 'Network Operations Centre', NULL, 6);
 
 
 COMMIT;

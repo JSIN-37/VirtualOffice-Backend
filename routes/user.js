@@ -88,7 +88,7 @@ router.post("/login", (req, res) => {
   // TODO: Check for validation
   // Check if user with email and password exist
   req.app.db.query(
-    "SELECT id, first_name, last_name FROM vo_user WHERE email = ? AND password = ?",
+    "SELECT id, first_name, last_name, division_id FROM vo_user WHERE email = ? AND password = ?",
     [email, hashedPassword],
     (error, results, fields) => {
       if (error) throw error;
@@ -111,6 +111,7 @@ router.post("/login", (req, res) => {
           email: results[0].email,
           first_name: results[0].first_name,
           last_name: results[0].last_name,
+          division_id: results[0].division_id,
         };
         jwt.sign({ user: user, expire: expire }, ss.JWT_KEY, (err, token) => {
           res.json({ token }); // Just send back the token
@@ -130,8 +131,6 @@ router.post("/login", (req, res) => {
  *  get:
  *    summary: Gets data about logged in user [token required]
  *    tags: [User]
- *    produces:
- *      - application/json
  *    responses:
  *      200:
  *        description: Authorization successful, gets data about id, first_name, last_name
@@ -141,7 +140,7 @@ router.post("/login", (req, res) => {
 router.get("/whoami", verifyUser, (req, res) => {
   const userID = req.authData.user.id;
   req.app.db.query(
-    "SELECT id, first_name, last_name FROM vo_user WHERE id = ?",
+    "SELECT id, first_name, last_name, division_id FROM vo_user WHERE id = ?",
     [userID],
     (error, results, fields) => {
       if (error) throw error;
@@ -149,6 +148,33 @@ router.get("/whoami", verifyUser, (req, res) => {
         res.json(results[0]);
       } else {
         res.json({ error: "You have been deleted lmao." });
+      }
+    }
+  );
+});
+
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /user/division-users:
+ *  get:
+ *    summary: Gets data about all users in current user's division [token required]
+ *    tags: [User]
+ *    responses:
+ *      200:
+ *        description: Authorization successful, gets data array about [{id, first_name, last_name, email, contact_number}, ...]
+ *      401:
+ *        description: Authorization failed.
+ */
+ router.get("/division-users", verifyUser, (req, res) => {
+  const division_id = req.authData.user.division_id;
+  req.app.db.query(
+    "SELECT id, first_name, last_name, email, contact_number FROM vo_user WHERE division_id = ?",
+    [division_id],
+    (error, results, fields) => {
+      if (error) throw error;
+      if (results.length) {
+        res.json(results);
       }
     }
   );
@@ -273,7 +299,7 @@ router.post("/checkout", verifyUser, (req, res) => {
       if (error) throw error;
       // Calculate full/half day
       const whatDay = Math.floor((epochNow - results[0].start_time) / 3600);
-      var verdict = "N";
+      var verdict = null;
       // Full!
       if (whatDay >= fullDay) verdict = "F";
       // Half!
