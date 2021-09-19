@@ -163,8 +163,6 @@ router.get("/whoami", verifyUser, (req, res) => {
  *    responses:
  *      200:
  *        description: Authorization successful, gets data array about [{id, first_name, last_name, email, contact_number}, ...]
- *      401:
- *        description: Authorization failed.
  */
  router.get("/division-users", verifyUser, (req, res) => {
   const division_id = req.authData.user.division_id;
