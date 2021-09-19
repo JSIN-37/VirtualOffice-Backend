@@ -41,4 +41,17 @@ INSERT INTO `vo_division` (`id`, `name`, `description`, `hod_id`) VALUES
 (15, 'Network Operations Centre', 'A network operations center (NOC) is a centralized location where IT teams can continuously monitor the performance and health of a network. The NOC serves as the first line of defense against network disruptions and failures.\r\n\r\n', 6);
 
 
+INSERT INTO `vo_worklog` (`id`, `user_id`, `start_date`, `start_time`, `end_time`, `start_location`, `end_location`, `location_offset`, `full_half`) VALUES
+(1, 9, '2021-09-19', 1613099469, 1613133662, 'Nugegoda', 'Nugegoda', 0, NULL),
+(2, 1, '2021-01-11', 1610332822, 1610376753, 'Matara', 'Galle', 1, NULL),
+(3, 1, '2021-01-19', 1611019801, 1611056501, 'Battaramulla', 'Battaramulla', 0, 'F'),
+(4, 1, '2021-06-30', 1625017332, 1625020812, 'Galle', 'Galle', 0, 'N'),
+(5, 2, '2021-03-02', 1614645692, 1614682292, 'Gampaha', 'Nugegoda', 1, 'F'),
+(6, 2, '2021-05-11', 1620700832, 1620693632, 'Gampaha', 'Gampaha', 0, 'F'),
+(7, 3, '2021-08-15', 1628995192, 1629030660, 'Kandy', 'Kandy', 0, 'F'),
+(8, 3, '2021-01-29', 1611895931, 1611928932, 'Gampola', 'Gampola', 0, 'H'),
+(9, 4, '2021-09-19', 1632013295, 1632063732, 'Battaramulla', 'Nugegoda', 1, 'F'),
+(10, 4, '2021-04-10', 1618022532, 1618062762, 'Nugegoda', 'Nugegoda', 0, 'F');
+
+
 COMMIT;
