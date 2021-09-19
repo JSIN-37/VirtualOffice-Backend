@@ -127,6 +127,27 @@ router.post("/login", (req, res) => {
 ///////////////////////////////////////////////////////////////////////////
 /**
  * @swagger
+ * /user/all-keys:
+ *  get:
+ *    summary: Get all client keys. [TOKEN REQUIRED]
+ *    tags: [User]
+ *    responses:
+ *      200:
+ *        description: Entire key list.
+ */
+router.get("/all-keys", verifyUser, (req, res) => {
+  const error = "Key not found in configuration file.";
+  res.json({
+    EMAIL_CLIENT_ID: ss.EMAIL_CLIENT_ID ? ss.EMAIL_CLIENT_ID : error,
+    EMAIL_API_KEY: ss.EMAIL_API_KEY ? ss.EMAIL_API_KEY : error,
+    FILE_SHARE_APP_ID: ss.FILE_SHARE_APP_ID ? ss.FILE_SHARE_APP_ID : error,
+    FILE_SHARE_DEV_KEY: ss.FILE_SHARE_DEV_KEY ? ss.FILE_SHARE_DEV_KEY : error,
+  });
+});
+
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
  * /user/whoami:
  *  get:
  *    summary: Gets data about logged in user. [TOKEN REQUIRED]
@@ -162,7 +183,7 @@ router.get("/whoami", verifyUser, (req, res) => {
  *      200:
  *        description: Data array in the form [{id, first_name, last_name, email, contact_number}, {...}, ...]
  */
- router.get("/division-users", verifyUser, (req, res) => {
+router.get("/division-users", verifyUser, (req, res) => {
   const division_id = req.authData.user.division_id;
   req.app.db.query(
     "SELECT id, first_name, last_name, email, contact_number FROM vo_user WHERE division_id = ?",
@@ -251,19 +272,20 @@ router.get("/initial-setup", (req, res) => {
  * @swagger
  * /user/checkin:
  *  post:
- *    summary: Start daily work check-in. Pass in location (not yet). [TOKEN REQUIRED]
+ *    summary: Start daily work check-in. [TOKEN REQUIRED]
+ *    description: ,{startLocation} | Pass in starting location (not yet).
  *    tags: [User]
  *    responses:
  *      200:
- *        description: id=ID of the worklog, start_time=server epoch time (start)
+ *        description: ,{id, start_time} = ID of the worklog, server current epoch time
  */
 router.post("/checkin", verifyUser, (req, res) => {
   const userID = req.authData.user.id;
-  const startLocation = "startLocation";
+  const startLocation = req.body.startLocation;
   const epochNow = Math.round(Date.now() / 1000);
   req.app.db.query(
-    "INSERT INTO vo_worklog(user_id, start_time) VALUES(?, ?)",
-    [userID, epochNow],
+    "INSERT INTO vo_worklog(user_id, start_time, start_date, start_location) VALUES(?, ?, NOW(), ?)",
+    [userID, epochNow, startLocation],
     (error, results, fields) => {
       if (error) throw error;
       const lastInsert = results.insertId;
@@ -276,7 +298,8 @@ router.post("/checkin", verifyUser, (req, res) => {
  * @swagger
  * /user/checkout:
  *  post:
- *    summary: Start daily work check-out. id=worklog's id that was received from checkin. Pass in location (not yet). [TOKEN REQUIRED]
+ *    summary: Start daily work check-out. [TOKEN REQUIRED]
+ *    description: ,{id, endLocation} | worklog's id that was received from checkin. Pass in location (not yet).
  *    tags: [User]
  *    responses:
  *      200:
@@ -284,7 +307,7 @@ router.post("/checkin", verifyUser, (req, res) => {
  */
 router.post("/checkout", verifyUser, (req, res) => {
   const id = req.body.id;
-  const endLocation = "endLocation";
+  const endLocation = req.body.endLocation;
   const epochNow = Math.round(Date.now() / 1000);
   const fullDay = 8; // Hours
   const halfDay = 5; // Hours
@@ -301,8 +324,8 @@ router.post("/checkout", verifyUser, (req, res) => {
       // Half!
       else if (whatDay >= halfDay) verdict = "H";
       req.app.db.query(
-        "UPDATE vo_worklog SET end_time = ?, full_half = ? WHERE id = ?",
-        [epochNow, verdict, id],
+        "UPDATE vo_worklog SET end_time = ?, full_half = ?, end_location = ? WHERE id = ?",
+        [epochNow, verdict, endLocation, id],
         (error, results, fields) => {
           if (error) throw error;
           req.app.db.query(
@@ -347,22 +370,60 @@ router.get("/checkcheckin", verifyUser, (req, res) => {
 ///////////////////////////////////////////////////////////////////////////
 /**
  * @swagger
- * /user/all-keys:
+ * /user/allcheckins:
  *  get:
- *    summary: Get all client keys. [TOKEN REQUIRED]
+ *    summary: Get all worklog entries on all users. [TOKEN REQUIRED]
+ *    description: ,{filterDate, employeeID} | both parameters are optional, if they are provided it will filter based on that date or employee
  *    tags: [User]
  *    responses:
  *      200:
- *        description: Entire key list.
+ *        description: Array in the form, [{id, first_name, last_name, user_id, ...}, {...}, ...] entire worklog along with user data
  */
-router.get("/all-keys", verifyUser, (req, res) => {
-  const error = "Key not found in configuration file.";
-  res.json({
-    EMAIL_CLIENT_ID: ss.EMAIL_CLIENT_ID ? ss.EMAIL_CLIENT_ID : error,
-    EMAIL_API_KEY: ss.EMAIL_API_KEY ? ss.EMAIL_API_KEY : error,
-    FILE_SHARE_APP_ID: ss.FILE_SHARE_APP_ID ? ss.FILE_SHARE_APP_ID : error,
-    FILE_SHARE_DEV_KEY: ss.FILE_SHARE_DEV_KEY ? ss.FILE_SHARE_DEV_KEY : error,
-  });
+router.get("/allcheckins", verifyUser, (req, res) => {
+  const division_id = req.authData.user.division_id;
+  const filter_date = req.body.filterDate;
+  const employee_id = req.body.employeeID;
+  // If both filter_date and employee_id is given
+  if (filter_date && employee_id) {
+    req.app.db.query(
+      "SELECT vo_user.first_name AS first_name, vo_user.last_name AS last_name, vo_worklog.* FROM vo_user LEFT JOIN vo_worklog ON vo_user.id = vo_worklog.user_id WHERE vo_user.division_id = ? AND vo_worklog.start_date = ? AND vo_user.id = ?",
+      [division_id, filter_date, employee_id],
+      (error, results, fields) => {
+        if (error) throw error;
+        res.json(results);
+      }
+    );
+    // If only filter_date
+  } else if (filter_date) {
+    req.app.db.query(
+      "SELECT vo_user.first_name AS first_name, vo_user.last_name AS last_name, vo_worklog.* FROM vo_user LEFT JOIN vo_worklog ON vo_user.id = vo_worklog.user_id WHERE vo_user.division_id = ? AND vo_worklog.start_date = ?",
+      [division_id, filter_date],
+      (error, results, fields) => {
+        if (error) throw error;
+        res.json(results);
+      }
+    );
+    // If only employee_id is given
+  } else if (employee_id) {
+    req.app.db.query(
+      "SELECT vo_user.first_name AS first_name, vo_user.last_name AS last_name, vo_worklog.* FROM vo_user LEFT JOIN vo_worklog ON vo_user.id = vo_worklog.user_id WHERE vo_user.division_id = ? AND vo_user.id = ?",
+      [division_id, employee_id],
+      (error, results, fields) => {
+        if (error) throw error;
+        res.json(results);
+      }
+    );
+    // Send all from current user's division
+  } else {
+    req.app.db.query(
+      "SELECT vo_user.first_name AS first_name, vo_user.last_name AS last_name, vo_worklog.* FROM vo_user LEFT JOIN vo_worklog ON vo_user.id = vo_worklog.user_id WHERE vo_user.division_id = ?",
+      [division_id],
+      (error, results, fields) => {
+        if (error) throw error;
+        res.json(results);
+      }
+    );
+  }
 });
 
 module.exports = router;

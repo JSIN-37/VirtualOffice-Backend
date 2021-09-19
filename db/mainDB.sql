@@ -88,8 +88,12 @@ CREATE TABLE `vo_team_member` (
 CREATE TABLE `vo_worklog` (
   `id` int(11) PRIMARY KEY AUTO_INCREMENT,
   `user_id` int(11),
+  `start_date` DATE,
   `start_time` int(11),
   `end_time` int(11),
+  `start_location` VARCHAR(255),
+  `end_location` VARCHAR(255),
+  `location_offset` INT(11),
   `full_half` CHAR(1),
   FOREIGN KEY (user_id) REFERENCES vo_user(id)
 );
