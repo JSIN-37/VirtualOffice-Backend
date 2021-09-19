@@ -112,9 +112,10 @@ router.post("/login", (req, res) => {
           first_name: results[0].first_name,
           last_name: results[0].last_name,
           division_id: results[0].division_id,
+          roleName: results[0].role_name,
         };
         jwt.sign({ user: user, expire: expire }, ss.JWT_KEY, (err, token) => {
-          res.json({ token, roleName: results[0].role_name }); // Just send back the token
+          res.json({ token, userData: user }); // Just send back the token
         });
       } else {
         res.status(401).json({ error: "Login failed." });
