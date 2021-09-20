@@ -156,12 +156,12 @@ router.get("/all-keys", verifyUser, (req, res) => {
  *    tags: [User]
  *    responses:
  *      200:
- *        description: Data about id, first_name, last_name
+ *        description: Data about {id, first_name, last_name, division_name}
  */
 router.get("/whoami", verifyUser, (req, res) => {
   const userID = req.authData.user.id;
   req.app.db.query(
-    "SELECT id, first_name, last_name, division_id FROM vo_user WHERE id = ?",
+    "SELECT first_name, last_name, division_id, vo_division.name AS division_name FROM vo_user, vo_division WHERE vo_user.id = ? AND vo_user.division_id = vo_division.id",
     [userID],
     (error, results, fields) => {
       if (error) throw error;
