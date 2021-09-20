@@ -393,4 +393,22 @@ router.post("/teams", verifyAdmin, (req, res) => {
   );
 });
 
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /admin/user-roles:
+ *  get:
+ *    summary: Get all user roles. [TOKEN REQUIRED]
+ *    tags: [Admin]
+ *    responses:
+ *      200:
+ *        description: Array in the form, [{id, name, description, leader_id, division_id}, {...}, ...]
+ */
+ router.get("/user-roles", verifyAdmin, function (req, res) {
+  req.app.db.query("SELECT * FROM vo_role", function (error, results, fields) {
+    if (error) throw error;
+    res.json(results);
+  });
+});
+
 module.exports = router;
