@@ -25,33 +25,39 @@ INSERT INTO `vo_user` (`id`, `first_name`, `last_name`, `email`, `contact_number
 
 
 INSERT INTO `vo_division` (`id`, `name`, `description`, `hod_id`) VALUES
-(2, 'General Administration', 'The  General Administration Division is responsible for matters relating to the rehabilitation works, maintenance of buildings and equipment, providing services to the staff and students, procurement and communication facilities.', 1),
-(3, 'Academic & Publications', 'The Academic & Publications Division is responsible for procedures related to matters such as publications by the academic establishment, the collection of data and the compilation of University statistics, as well as registration related proceedings of several postgraduate programs of the University', 2),
+(2, 'General Administration', 'The  General Administration Division is responsible for matters relating to the rehabilitation works, maintenance of buildings and equipment, providing services to the staff and students.', 1),
+(3, 'Academic & Publications', 'The Academic & Publications Division is responsible for procedures related to matters such as publications by the academic establishment, and the compilation of University statistics.', 2),
 (4, 'Examinations & Registration', 'Examinations & Registration Division provides various important student related services such as Student Registration, Undergraduate and Postgraduate Examinations Related Activities, Conducting Aptitude Tests, Issuing Examination Results, Issuing Academic Transcripts and Degree Certificates etc.', 3),
-(5, 'Establishments', 'Establishments Division is the recruitment of qualified staff and retaining them in the service in line with the corporate goals of the University. The Establishments Division also assists the University Council in the development, maintenance and interpretation of human resources management procedures in accordance with the Establishment Code and Rule and Regulations of the University Grants Commission and Administrative policies of the University.', 4),
-(6, 'Postgraduate & Quality Assurance', 'The Postgraduate Studies Division was set up under the Dean of each Faculty for the administration of Research Degrees in the Faculty.\r\n\r\nIt is headed by the Director of Postgraduate Studies, who is also the ex-officio Chairman of the Higher Degrees Committee of each Faculty.', 8),
-(7, 'External Degrees Centre', 'External Degrees and Extension Course Unit of University is offering six degrees from two majors from Faculty of Management Studies and Commerce and Faculty of Humanities and Social Sciences. ', 6),
-(8, 'Director’s Office', 'Director’s office is where the Director functions as the Principal Executive Officer as well as the Principal Academic Officer in the University.  And takes care of both academic and non-academic activities for the smooth functioning of the University.', 7),
-(9, 'Academic, Publications & Welfare', 'The Student & Staff Welfare office is responsible for the welfare of all students enrolled at the University. It works closely with all administrative and academic departments to assist students to familiarize the environment and achieve their academic goals as well as assist students with the culture and the community. The mission of the division is to provide an enabling environment that aims at quality student services and a range of learning, social, cultural, health, and recreational opport', 4),
-(10, 'Examinations & Registration', 'Examinations & Registration Division provides various important student related services such as Student Registration, Undergraduate and Postgraduate Examinations Related Activities, Conducting Aptitude Tests, Issuing Examination Results, Issuing Academic Transcripts and Degree Certificates etc.', 9),
+(5, 'Establishments', 'Establishments Division is the recruitment of qualified staff and retaining them in the service in line with the corporate goals of the University. The Establishments Division also assists the University Council in the development, maintenance and interpretation of human resources management procedures.', 4),
+(6, 'Postgraduate & Quality Assurance', 'The Postgraduate Studies and Quality Assurance Division was set up under the Dean of each Faculty for the administration of Research Degrees in the Faculty. It is headed by the Director of Postgraduate Studies, who is also the ex-official Chairman of the Higher Degrees and Quality Assurance Committee of each Faculty.', 8),
+(7, 'External Degrees Centre', 'External Degrees and Extension Course Unit of University is offering six degrees from two majors from Faculty of Management Studies and Commerce and Faculty of Humanities and Social Sciences.', 6),
+(8, 'Director’s Office', 'Director’s office is where the Director functions as the Principal Executive Officer as well as the Principal Academic Officer in the University.  And takes care of both academic and non-academic activities.', 7),
+(9, 'Academic, Publications & Welfare', 'The Student & Staff Welfare is working with administrative and academic departments to assist students to familiarize themselves with the environment and to help them achieve their academic goals.', 4),
 (11, 'Engineering Division', 'Pursuing fundamental electrical, electronic and photonic research at the material, device and system levels with a focus on creating integrated solutions in the fields of nanotechnology, sensing, energy generation, energy conversion, displays and communications.', 10),
-(12, 'Finance Division', 'The Division is headed by a Bursar, 02 Deputy Bursars, 01 Senior Assistant Bursar, along with a staff consisting of 05 Book Keepers, 01 Data Administrator, 02 Computer Applications Assistants, 12 Clerks, 02 Shroffs 01 Book Binder, 03 Laborers. \r\nThe primary objective of the Finance Division is to plan, organize, direct and control financial activities such as procurement and the proper utilization of funds efficiently and effectively to meet the goals and objectives in line with the strategic pl', 4),
-(13, 'The Library', 'The University library system consists of the Central Library and faculty libraries. \r\nThe Central Library is situated in a five storied building between the Law Faculty Building Complex and the Arts Faculty Building Complex. The library contains books and periodicals in Humanities, Education, Law, Management, and Social Sciences. The main entrance to the library is facing the Reid Avenue.\r\n', 2),
+(12, 'Finance Division', 'The primary objective of the Finance Division is to plan, organize, direct and control financial activities such as procurement and the proper utilization of funds efficiently and effectively to meet the goals and objectives in line with the strategic plan.', 4),
+(13, 'The Library', 'The University library system consists of the Central Library and faculty libraries. The Central Library is situated in a five storied building between the Law Faculty Building Complex and the Arts Faculty Building Complex. The library contains books and periodicals in Humanities.', 2),
 (14, 'External Degrees Centre (EDC)', 'The external degree centre offers degrees to university students who have not means to be physically present within the geographic territory of the institution.', 5),
-(15, 'Network Operations Centre', 'A network operations center (NOC) is a centralized location where IT teams can continuously monitor the performance and health of a network. The NOC serves as the first line of defense against network disruptions and failures.\r\n\r\n', 6);
+(15, 'Network Operations Centre', 'NOC is a centralized location where IT teams continuously monitor the performance and health of networks. It serves as the first line defense against network failures.', 6);
 
 
 INSERT INTO `vo_worklog` (`id`, `user_id`, `start_date`, `start_time`, `end_time`, `start_location`, `end_location`, `location_offset`, `full_half`) VALUES
-(1, 9, '2021-09-19', 1613099469, 1613133662, 'Nugegoda', 'Nugegoda', 0, NULL),
-(2, 1, '2021-01-11', 1610332822, 1610376753, 'Matara', 'Galle', 1, NULL),
-(3, 1, '2021-01-19', 1611019801, 1611056501, 'Battaramulla', 'Battaramulla', 0, 'F'),
-(4, 1, '2021-06-30', 1625017332, 1625020812, 'Galle', 'Galle', 0, 'N'),
-(5, 2, '2021-03-02', 1614645692, 1614682292, 'Gampaha', 'Nugegoda', 1, 'F'),
-(6, 2, '2021-05-11', 1620700832, 1620693632, 'Gampaha', 'Gampaha', 0, 'F'),
-(7, 3, '2021-08-15', 1628995192, 1629030660, 'Kandy', 'Kandy', 0, 'F'),
-(8, 3, '2021-01-29', 1611895931, 1611928932, 'Gampola', 'Gampola', 0, 'H'),
-(9, 4, '2021-09-19', 1632013295, 1632063732, 'Battaramulla', 'Nugegoda', 1, 'F'),
-(10, 4, '2021-04-10', 1618022532, 1618062762, 'Nugegoda', 'Nugegoda', 0, 'F');
+(2, 1, '2021-09-01', 1610332822, 1610376753, 'https://goo.gl/maps/HneHSzxAV7rJ6AeX7', 'https://goo.gl/maps/nzQa2SZmkqgziofSA', 1, 'F'),
+(3, 1, '2021-09-02', 1611019801, 1611056501, 'https://goo.gl/maps/TmhyGXvaBYCVa7uU9', 'https://goo.gl/maps/TmhyGXvaBYCVa7uU9', 0, 'F'),
+(4, 1, '2021-09-03', 1625017332, 1625020812, 'https://goo.gl/maps/HB4b1kUZFCZKwwWX7', 'https://goo.gl/maps/HB4b1kUZFCZKwwWX7', 0, 'N'),
+(5, 2, '2022-09-01', 1614645692, 1614682292, 'https://goo.gl/maps/GDoLYSb8Z3mig7uP8', 'https://goo.gl/maps/3vgxkk833Yevb5SEA', 1, 'F'),
+(6, 2, '2021-09-02', 1620700832, 1620693632, 'https://goo.gl/maps/HB4b1kUZFCZKwwWX7', 'https://goo.gl/maps/HB4b1kUZFCZKwwWX7', 0, 'F'),
+(7, 3, '2021-09-01', 1628995192, 1629030660, 'https://goo.gl/maps/TmhyGXvaBYCVa7uU9', 'https://goo.gl/maps/TmhyGXvaBYCVa7uU9', 0, 'F'),
+(8, 3, '2021-09-02', 1611895931, 1611928932, 'https://goo.gl/maps/nzQa2SZmkqgziofSA', 'https://goo.gl/maps/nzQa2SZmkqgziofSA', 0, 'H'),
+(9, 4, '2021-09-03', 1632013295, 1632063732, 'https://goo.gl/maps/oymzQMHpBprB82257', 'https://goo.gl/maps/dJeNz6DTArZNv5iAA', 1, 'F'),
+(10, 4, '2021-09-06', 1618022532, 1618062762, 'https://goo.gl/maps/dJeNz6DTArZNv5iAA', 'https://goo.gl/maps/dJeNz6DTArZNv5iAA', 0, 'F'),
+(11, 1, '2021-09-06', 1620700832, 1618062762, 'https://goo.gl/maps/bWfoaEG4arGdWkJD7', 'https://goo.gl/maps/bWfoaEG4arGdWkJD7', 0, 'F'),
+(13, 2, '2021-09-06', 1620700832, 1632111589, 'https://goo.gl/maps/54Z1Vq7tAe7jQF5u8', 'https://goo.gl/maps/54Z1Vq7tAe7jQF5u8', 0, 'F'),
+(14, 3, '2021-09-06', 1620700832, 1618062762, 'https://goo.gl/maps/54Z1Vq7tAe7jQF5u8', 'https://goo.gl/maps/54Z1Vq7tAe7jQF5u8', 0, 'F'),
+(15, 4, '2021-09-20', 1611895931, 1618062762, 'https://goo.gl/maps/RdvG5c1uNDUEbAC88', 'https://goo.gl/maps/QpG2PgXovCB4sfzo8', 1, 'F'),
+(19, 3, '2021-09-20', 1611019801, 1611056501, 'https://goo.gl/maps/sda5NX1EAmY34WsXA', 'https://goo.gl/maps/sda5NX1EAmY34WsXA', 0, 'F'),
+(20, 2, '2021-09-20', 1620700832, 1611056501, 'https://goo.gl/maps/54Z1Vq7tAe7jQF5u8', 'https://goo.gl/maps/54Z1Vq7tAe7jQF5u8', 0, 'F'),
+(21, 1, '2021-09-20', 1611895931, 1632137279, 'https://goo.gl/maps/x4Hg4dqQ4153fuK8A', 'https://goo.gl/maps/x4Hg4dqQ4153fuK8A', 0, 'F'),
+(22, 5, '2021-09-20', 1625017332, 1632126479, 'https://goo.gl/maps/uhN8gs6yRRwyQeuB9', 'https://goo.gl/maps/uhN8gs6yRRwyQeuB9', 0, 'H');
 
 
 COMMIT;
