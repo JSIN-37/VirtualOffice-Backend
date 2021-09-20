@@ -320,4 +320,77 @@ router.patch("/division/:id", verifyAdmin, function (req, res) {
   );
 });
 
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /admin/teams:
+ *  get:
+ *    summary: Get all teams. [TOKEN REQUIRED]
+ *    tags: [Admin]
+ *    responses:
+ *      200:
+ *        description: Array in the form, [{id, name, description, leader_id, division_id}, {...}, ...]
+ */
+router.get("/teams", verifyAdmin, function (req, res) {
+  req.app.db.query("SELECT * FROM vo_team", function (error, results, fields) {
+    if (error) throw error;
+    res.json(results);
+  });
+});
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /admin/teams:
+ *  post:
+ *    summary: Insert a team and send an email to leader. [TOKEN REQUIRED]
+ *    description: Input data in the form, {name, description, leaderID, divisionID, memberIDs, sendEmail} **[REQUIRED]**
+ *    tags: [Admin]
+ *    responses:
+ *      200:
+ *        description: Success or failure
+ */
+router.post("/teams", verifyAdmin, (req, res) => {
+  const name = req.body.name;
+  const description = req.body.description;
+  const leaderID = req.body.leaderID;
+  const divisionID = req.body.divisionID;
+  const memberIDs = req.body.memberIDs;
+  const sendEmailStat = req.body.sendEmail;
+  req.app.db.query(
+    "INSERT INTO vo_team(name, description, leader_id, division_id) VALUES(?, ?, ?, ?)",
+    [name, description, leaderID, divisionID],
+    (error, results, fields) => {
+      if (error) throw error;
+      const teamID = results.insertId;
+      memberIDs.forEach((memberID, index) => {
+        req.app.db.query(
+          "INSERT INTO vo_team_member(team_id, member_id) VALUES(?, ?)",
+          [teamID, memberID]
+        );
+      });
+      if (sendEmailStat) {
+        req.app.db.query(
+          "SELECT email FROM vo_user WHERE id = ?",
+          [leaderID],
+          (error, results, fields) => {
+            if (error) throw error;
+            const email = results[0].email;
+            sendMail(
+              req.app.email,
+              email,
+              "VirtualOffice Team Invitation",
+              `<center>
+                <b>You've been invited to join the team ${name}!</b><br>
+                <a href=${ss.FRONTEND_URL}>Accept Invitation</a> <br><br>
+                Team Description: ${description} <br>
+                </center>`
+            );
+          }
+        );
+      }
+      res.json({ success: "Added team." });
+    }
+  );
+});
+
 module.exports = router;

@@ -61,4 +61,35 @@ INSERT INTO `vo_worklog` (`id`, `user_id`, `start_date`, `start_time`, `end_time
 (22, 5, '2021-09-20', 1632106074, 1632123954, 'https://goo.gl/maps/uhN8gs6yRRwyQeuB9', 'https://goo.gl/maps/uhN8gs6yRRwyQeuB9', 0, 'H');
 
 
+INSERT INTO `vo_team` (`id`, `name`, `description`, `leader_id`, `division_id`) VALUES
+(1, 'Web Team', 'Made up of a diverse group of people who all contribute their skills in multiple avenues. The goal of a web team is generally to bridge the gap between innovative and new digital products with unfamiliar audiences.', 1, 2),
+(2, 'Network Team', 'Offers two distinct ways to procure and use IT tools. Managed IT Services and Outsourced IT allow users to consistently experience predictable IT for all the employees.', 4, 11),
+(3, 'Euphony Team', 'Initiated as a group of individuals who are extremely passionate in music and has carried out many projects in this short time period with a view of redefining music.', 7, 5),
+(4, 'Plumbing Team', 'Specializes in installing and maintaining systems used for potable (drinking) water, and for sewage and drainage in plumbing.', 18, 5),
+(5, 'Maintenance Team', 'A group of Purchasers technicians trained and certified in the maintenance of the Hardware and Software and having the full competence to support the delivered System', 8, 6),
+(6, 'Invigilators Team', 'A group of individuals work as exam proctors or exam supervisors and are appointed by the examination board and services for maintaining the proper conduct of examinations', 12, 4),
+(7, 'Research Assistants Team', 'Research assistants are employed by research institutes to assist with academic or private research. The primary responsibility of a research assistant is to provide support to either a research fellow or a research team, through collecting, analyzing and interpreting data', 26, 14);
+INSERT INTO `vo_team_member` (`team_id`, `member_id`) VALUES
+(1, 8),
+(1, 13),
+(1, 16),
+(2, 9),
+(2, 17),
+(2, 24),
+(3, 5),
+(3, 9),
+(3, 16),
+(4, 1),
+(4, 10),
+(4, 14),
+(5, 2),
+(5, 12),
+(5, 23),
+(6, 13),
+(6, 15),
+(6, 19),
+(7, 6),
+(7, 13),
+(7, 26);
+
 COMMIT;
