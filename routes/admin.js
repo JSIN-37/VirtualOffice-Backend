@@ -155,7 +155,7 @@ router.post("/initial-setup", verifyAdmin, function (req, res) {
  *      200:
  *        description: Array in the form, [{id, first_name, last_name, email, contact_number}, {...}, ...]
  */
-router.get("/users", verifyAdmin, (req, res) => {
+router.get("/users", (req, res) => {
   req.app.db.query(
     "SELECT id, first_name, last_name, email, contact_number FROM vo_user",
     [],

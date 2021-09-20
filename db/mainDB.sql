@@ -23,7 +23,7 @@ CREATE TABLE `vo_user` (
   `gender` char(1),
   `address` varchar(400),
   `division_id` int(11),
-  `role_id` int(11)
+  `role_id` int(11) DEFAULT 1
 );
 
 CREATE TABLE `vo_division` (
@@ -47,16 +47,17 @@ INSERT INTO `vo_user` (`first_name`, `last_name`, `email`, `contact_number`, `pa
 CREATE TABLE `vo_role` (
   `id` int(11) PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255),
+  `description` varchar(500),
   `create_team` int(11),
   `monitor_attendance` int(11),
   `monitor_tasks` int(11),
   `create_tasks` int(11)
 );
 
-INSERT INTO `vo_role` (`name`, `create_team`, `monitor_attendance`, `monitor_tasks`, `create_tasks`) VALUES
-('Worker', 0, 0, 0, 0),
-('Head of Division', 1, 1, 1, 1),
-('CEO/Director', 1, 1, 1, 1);
+INSERT INTO `vo_role` (`name`, `description`, `create_team`, `monitor_attendance`, `monitor_tasks`, `create_tasks`) VALUES
+('Worker', 'Default employee of VirtualOffice', 0, 0, 0, 0),
+('Head of Division', 'Default head of division of VirtualOffice', 1, 1, 1, 1),
+('CEO/Director', 'Default CEO/Director of VirtualOffice', 1, 1, 1, 1);
 
 CREATE TABLE `vo_team` (
   `id` int(11) PRIMARY KEY AUTO_INCREMENT,

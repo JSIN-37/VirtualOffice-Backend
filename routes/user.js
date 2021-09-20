@@ -143,6 +143,7 @@ router.get("/all-keys", verifyUser, (req, res) => {
     EMAIL_API_KEY: ss.EMAIL_API_KEY ? ss.EMAIL_API_KEY : error,
     FILE_SHARE_APP_ID: ss.FILE_SHARE_APP_ID ? ss.FILE_SHARE_APP_ID : error,
     FILE_SHARE_DEV_KEY: ss.FILE_SHARE_DEV_KEY ? ss.FILE_SHARE_DEV_KEY : error,
+    DOC_SIGN_KEY: ss.DOC_SIGN_KEY ? ss.DOC_SIGN_KEY : error,
   });
 });
 
