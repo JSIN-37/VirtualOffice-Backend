@@ -183,12 +183,12 @@ router.get("/whoami", verifyUser, (req, res) => {
  *    tags: [User]
  *    responses:
  *      200:
- *        description: Data array in the form [{id, first_name, last_name, email, contact_number}, {...}, ...]
+ *        description: Data array in the form [{id, first_name, last_name, email, contact_number, address}, {...}, ...]
  */
 router.get("/division-users", verifyUser, (req, res) => {
   const division_id = req.authData.user.division_id;
   req.app.db.query(
-    "SELECT id, first_name, last_name, email, contact_number FROM vo_user WHERE division_id = ?",
+    "SELECT id, first_name, last_name, email, contact_number, address FROM vo_user WHERE division_id = ?",
     [division_id],
     (error, results, fields) => {
       if (error) throw error;
@@ -428,4 +428,39 @@ router.post("/allcheckins", verifyUser, (req, res) => {
   }
 });
 
+///////////////////////////////////////////////////////////////////////////
+/**
+ * @swagger
+ * /user/getcheckins:
+ *  post:
+ *    summary: Get all worklog entries on a user. [TOKEN REQUIRED]
+ *    description: ,{filterDate} | optional, if it is provided it will filter based on that date
+ *    tags: [User]
+ *    responses:
+ *      200:
+ *        description: Array in the form, [{ start_date, full_half }, {...}, ...]
+ */
+router.post("/getcheckins", verifyUser, (req, res) => {
+  const userID = req.authData.user.id;
+  const filter_date = req.body.filterDate;
+  if (filter_date) {
+    req.app.db.query(
+      "SELECT start_date, full_half FROM vo_worklog WHERE user_id = ? AND start_date = ?",
+      [userID, filter_date],
+      (error, results, fields) => {
+        if (error) throw error;
+        res.json(results);
+      }
+    );
+  } else {
+    req.app.db.query(
+      "SELECT start_date, full_half FROM vo_worklog WHERE user_id = ?",
+      [userID],
+      (error, results, fields) => {
+        if (error) throw error;
+        res.json(results);
+      }
+    );
+  }
+});
 module.exports = router;
