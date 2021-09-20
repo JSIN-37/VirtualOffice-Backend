@@ -388,7 +388,7 @@ router.post("/allcheckins", verifyUser, (req, res) => {
   // If both filter_date and employee_id is given
   if (filter_date && employee_id) {
     req.app.db.query(
-      "SELECT vo_user.first_name AS first_name, vo_user.last_name AS last_name, vo_worklog.* FROM vo_user LEFT JOIN vo_worklog ON vo_user.id = vo_worklog.user_id WHERE vo_user.division_id = ? AND vo_worklog.start_date = ? AND vo_user.id = ?",
+      "SELECT u.first_name AS first_name, u.last_name AS last_name, w.* FROM (SELECT id, first_name, last_name FROM vo_user WHERE division_id = ?) AS u LEFT JOIN (SELECT * FROM vo_worklog WHERE start_date = ?) AS w ON u.id = w.user_id WHERE u.id = ?",
       [division_id, filter_date, employee_id],
       (error, results, fields) => {
         if (error) throw error;
@@ -398,7 +398,7 @@ router.post("/allcheckins", verifyUser, (req, res) => {
     // If only filter_date
   } else if (filter_date) {
     req.app.db.query(
-      "SELECT vo_user.first_name AS first_name, vo_user.last_name AS last_name, vo_worklog.* FROM vo_user LEFT JOIN vo_worklog ON vo_user.id = vo_worklog.user_id WHERE vo_user.division_id = ? AND vo_worklog.start_date = ?",
+      "SELECT u.first_name AS first_name, u.last_name AS last_name, w.* FROM (SELECT id, first_name, last_name FROM vo_user WHERE division_id = ?) AS u LEFT JOIN (SELECT * FROM vo_worklog WHERE start_date = ?) AS w ON u.id = w.user_id",
       [division_id, filter_date],
       (error, results, fields) => {
         if (error) throw error;
@@ -408,7 +408,7 @@ router.post("/allcheckins", verifyUser, (req, res) => {
     // If only employee_id is given
   } else if (employee_id) {
     req.app.db.query(
-      "SELECT vo_user.first_name AS first_name, vo_user.last_name AS last_name, vo_worklog.* FROM vo_user LEFT JOIN vo_worklog ON vo_user.id = vo_worklog.user_id WHERE vo_user.division_id = ? AND vo_user.id = ?",
+      "SELECT u.first_name AS first_name, u.last_name AS last_name, w.* FROM (SELECT id, first_name, last_name FROM vo_user WHERE division_id = ?) AS u LEFT JOIN (SELECT * FROM vo_worklog) AS w ON u.id = w.user_id WHERE u.id = ?",
       [division_id, employee_id],
       (error, results, fields) => {
         if (error) throw error;
@@ -418,7 +418,7 @@ router.post("/allcheckins", verifyUser, (req, res) => {
     // Send all from current user's division
   } else {
     req.app.db.query(
-      "SELECT vo_user.first_name AS first_name, vo_user.last_name AS last_name, vo_worklog.* FROM vo_user LEFT JOIN vo_worklog ON vo_user.id = vo_worklog.user_id WHERE vo_user.division_id = ?",
+      "SELECT u.first_name AS first_name, u.last_name AS last_name, w.* FROM (SELECT id, first_name, last_name FROM vo_user WHERE division_id = ?) AS u LEFT JOIN (SELECT * FROM vo_worklog) AS w ON u.id = w.user_id",
       [division_id],
       (error, results, fields) => {
         if (error) throw error;
