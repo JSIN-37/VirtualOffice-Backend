@@ -329,13 +329,16 @@ router.patch("/division/:id", verifyAdmin, function (req, res) {
  *    tags: [Admin]
  *    responses:
  *      200:
- *        description: Array in the form, [{id, name, description, leader_id, division_id}, {...}, ...]
+ *        description: Array in the form, [{id, name, description, leader_id, division_id, leader_name }, {...}, ...]
  */
 router.get("/teams", verifyAdmin, function (req, res) {
-  req.app.db.query("SELECT * FROM vo_team", function (error, results, fields) {
-    if (error) throw error;
-    res.json(results);
-  });
+  req.app.db.query(
+    "SELECT vo_team.*, CONCAT(vo_user.first_name, ' ', vo_user.last_name) AS leader_name FROM vo_team, vo_user WHERE vo_team.leader_id = vo_user.id",
+    function (error, results, fields) {
+      if (error) throw error;
+      res.json(results);
+    }
+  );
 });
 ///////////////////////////////////////////////////////////////////////////
 /**
@@ -404,7 +407,7 @@ router.post("/teams", verifyAdmin, (req, res) => {
  *      200:
  *        description: Array in the form, [{id, name, description, leader_id, division_id}, {...}, ...]
  */
- router.get("/user-roles", verifyAdmin, function (req, res) {
+router.get("/user-roles", verifyAdmin, function (req, res) {
   req.app.db.query("SELECT * FROM vo_role", function (error, results, fields) {
     if (error) throw error;
     res.json(results);
