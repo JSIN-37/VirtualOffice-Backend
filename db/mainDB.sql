@@ -38,11 +38,11 @@ INSERT INTO `vo_division` (`name`, `description`) VALUES
 ('VirtualOffice', 'Default division of VO');
 
 INSERT INTO `vo_user` (`first_name`, `last_name`, `email`, `contact_number`, `password`, `dob`, `gender`, `address`, `division_id`, `role_id`) VALUES
-('Naushikha', 'Jayawickrama', 'naushikha@vo.com', '0000000000', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', '12, Nawam Mawatha,Battaramulla', 1, 1),
-('Imashi', 'Dissanayake', 'imashi@vo.com', '0000000000', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', '7, Main Avenue, Kings Road, Greenpath', 1, 2),
-('Shakya', 'Abeytunge', 'shakya@vo.com', '0000000000', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', '14/2, Rail way road, Nugegoda', 1, 2),
-('Janadhi', 'Uyanhewa', 'janadhi@vo.com', '0000000000', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', '211, Silva Place, Nawala', 1, 2),
-('Sidath', 'Samarasinghe', 'sidath@vo.com', '0000000000', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', '21, Flower Avenue, Melwela', 1, 2);
+('Naushikha', 'Jayawickrama', 'naushikha@vo.com', '0763316991', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', '12, Nawam Mawatha,Battaramulla', 1, 1),
+('Imashi', 'Dissanayake', 'imashi@vo.com', '0783234214', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', '7, Main Avenue, Kings Road, Greenpath', 1, 2),
+('Shakya', 'Abeytunge', 'shakya@vo.com', '0753931217', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', '14/2, Rail way road, Nugegoda', 1, 2),
+('Janadhi', 'Uyanhewa', 'janadhi@vo.com', '0789134514', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', '211, Silva Place, Nawala', 1, 2),
+('Sidath', 'Samarasinghe', 'sidath@vo.com', '0733234216', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '2021-09-09', 'A', '21, Flower Avenue, Melwela', 1, 2);
 
 CREATE TABLE `vo_role` (
   `id` int(11) PRIMARY KEY AUTO_INCREMENT,
