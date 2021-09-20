@@ -21,7 +21,8 @@ INSERT INTO `vo_user` (`id`, `first_name`, `last_name`, `email`, `contact_number
 (22, 'Ginny', 'Backer', 'ginnybacker@hotmail.com', '0713332121', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '1997-12-21', 'F', '21, Main street, Colombo07', 4),
 (23, 'Georgia', 'Miller', 'millerg@gmail.com', '0711129121', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '1972-09-21', 'F', '83, Suburb, Melbourne', 2),
 (24, 'Simon', 'Conwell', 'conwellsimon@gmail.com', '0212131293', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '1971-04-03', 'M', '7, Main Avenue, Kings Road, Greenpath', 3),
-(25, 'Passepartout', 'Miller', 'passepartout@hotmail.com', '0813312345', '42, Queens Lane, Colombo 10', '1968-03-12', 'M', '12, 3rd floor, Kings Complex', 2);
+(25, 'Naushikha', 'Realo', 'naushikha.jayawickrama@gmail.com', '0768333893', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '1998-08-16', 'M', '14/2, Rail way road, Nugegoda', 3),
+(26, 'Imashi', 'Realo', 'imashi921a@gmail.com', '0768333893', '3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2', '1998-08-16', 'F', '14/2, Rail way road, Nugegoda', 3);
 
 
 INSERT INTO `vo_division` (`id`, `name`, `description`, `hod_id`) VALUES
