@@ -320,7 +320,7 @@ router.post("/checkout", verifyUser, (req, res) => {
       if (error) throw error;
       // Calculate full/half day
       const whatDay = Math.floor((epochNow - results[0].start_time) / 3600);
-      var verdict = null;
+      var verdict = "N";
       // Full!
       if (whatDay >= fullDay) verdict = "F";
       // Half!
