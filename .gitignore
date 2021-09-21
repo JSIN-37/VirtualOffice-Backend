@@ -2,3 +2,5 @@ node_modules/
 interim/
 config/*
 !config/example
+log/*
+!log/.gitkeep

@@ -20,6 +20,24 @@ const userRouter = require("./routes/user");
 const adminRouter = require("./routes/admin");
 const interimRouter = require("./routes/interim");
 
+// LOGGING
+// https://stackoverflow.com/questions/8393636/node-log-in-a-file-instead-of-the-console
+var todayEPOCH = new Date()
+  .toISOString()
+  .replace(
+    /^(?<year>\d+)-(?<month>\d+)-(?<day>\d+)T.*$/,
+    "$<year>_$<month>_$<day>"
+  );
+var util = require("util");
+var log_file = fs.createWriteStream(`log/${todayEPOCH}.log`, { flags: "a" });
+var log_stdout = process.stdout;
+
+console.log = function (d) {
+  log_file.write(new Date() + util.format(d) + "\n");
+  log_stdout.write(util.format(d) + "\n");
+};
+console.error = console.log;
+
 // Load server settings
 if (fs.existsSync("./config/prod")) {
   require("dotenv").config({ path: "./config/prod" });
@@ -181,6 +199,7 @@ app.email = transporter; // This is also defined when transporter is configured 
 
 // Routers that need server settings(ss)
 const authRouter = require("./routes/auth");
+const { stderr } = require("process");
 
 // Load all routes
 app.use(`/api/${apiV}/user`, userRouter);
