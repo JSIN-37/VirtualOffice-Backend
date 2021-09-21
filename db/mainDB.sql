@@ -85,7 +85,7 @@ CREATE TABLE `vo_worklog` (
   `end_time` int(11),
   `start_location` VARCHAR(255),
   `end_location` VARCHAR(255),
-  `location_offset` INT(11),
+  `location_offset` INT(11) DEFAULT 0,
   `full_half` CHAR(1),
   FOREIGN KEY (user_id) REFERENCES vo_user(id)
 );
