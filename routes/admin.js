@@ -384,7 +384,7 @@ router.post("/teams", verifyAdmin, (req, res) => {
               "VirtualOffice Team Invitation",
               `<center>
                 <b>You've been invited to join the team ${name}!</b><br>
-                <a href=${ss.FRONTEND_URL}>Accept Invitation</a> <br><br>
+                <a href="${ss.FRONTEND_URL}/employee">Accept Invitation</a> <br><br>
                 Team Description: ${description} <br>
                 </center>`
             );

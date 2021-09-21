@@ -15,7 +15,7 @@ INSERT INTO `vo_settings` (`vo_option`, `vo_value`) VALUES
 CREATE TABLE `vo_user` (
   `id` int(11) PRIMARY KEY AUTO_INCREMENT,
   `first_name` varchar(255),
-  `last_name` varchar(255),
+  `last_name` varchar(255) DEFAULT "Realo",
   `email` varchar(255),
   `contact_number` char(10),
   `password` varchar(255),
