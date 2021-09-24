@@ -130,9 +130,7 @@ server.listen(ss.SERVER_PORT, ss.SERVER_ADDRESS, () => {
   var host = server.address().address;
   var port = server.address().port;
   console.log(
-    `VirtualOffice Backend is listening at https://%s:%s/api/${apiV}`,
-    host,
-    port
+    `VirtualOffice Backend is listening at https://${host}:${port}/api/${apiV}`
   );
 });
 
@@ -144,9 +142,7 @@ if (ss.SERVER_HTTP != null) {
     var host = httpServer.address().address;
     var port = httpServer.address().port;
     console.log(
-      `[WARNING] HTTP Enabled. Listening at http://%s:%s/api/${apiV}`,
-      host,
-      port
+      `[WARNING] HTTP Enabled. Listening at http://${host}:${port}/api/${apiV}`
     );
   });
 }
